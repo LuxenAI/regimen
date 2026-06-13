@@ -17,6 +17,11 @@ Codex / Claude Code
 
 The default executors are CPU-local placeholders with production-shaped contracts. Real `<10M` models can replace `local.tiny_slm_stub` or add new executors without changing the MCP tools.
 
+Candidate SLM checkpoints and redundancy notes are tracked in
+[MODEL_CATALOG.md](MODEL_CATALOG.md). The linked Hugging Face collection is useful for
+developer-agent subroutine experiments, but those checkpoints start at 135M parameters, so they
+are optional SLM executors rather than replacements for strict `<10M` classifier work.
+
 ## Codex setup
 
 Print the local config snippet:
