@@ -46,6 +46,14 @@ class WorkflowDecomposer:
         """Infer a coarse task type from keywords and available context."""
         del context
         lowered = text.lower()
+        if _has_any(lowered, ("repair json", "json repair", "malformed json", "broken json")):
+            return "json_repair"
+        if _has_any(lowered, ("traceback", "stack trace", "localize failure", "culprit frame")):
+            return "trace_localize"
+        if _has_any(lowered, ("search query", "generate query", "grep pattern")):
+            return "search_query"
+        if _has_any(lowered, ("rank search", "search hit", "rank hits")):
+            return "search_rank"
         if _has_any(lowered, ("extract", "parse", "pull", "field", "email", "url", "json")):
             return "extract"
         if _has_any(lowered, ("classify", "label", "detect", "intent", "sentiment", "route")):

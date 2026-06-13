@@ -138,6 +138,40 @@ def create_server() -> Any:
         )
         return _json(payload)
 
+
+
+    @server.tool()
+    async def slm_repair_json(raw: str) -> str:
+        """Repair malformed JSON through the JSON repair executor."""
+        result = await _run_subroutine_tool("Repair JSON", "json_repair", {"raw": raw})
+        return _json(result)
+
+    @server.tool()
+    async def slm_localize_traceback(traceback: str, project_prefix: str = "") -> str:
+        """Find the likely culprit project frame in a Python traceback."""
+        result = await _run_subroutine_tool(
+            "Localize traceback",
+            "trace_localize",
+            {"traceback": traceback, "project_prefix": project_prefix},
+        )
+        return _json(result)
+
+    @server.tool()
+    async def slm_generate_search_queries(task: str) -> str:
+        """Generate code-search query candidates for a coding task."""
+        result = await _run_subroutine_tool("Generate search queries", "search_query", {"task": task})
+        return _json(result)
+
+    @server.tool()
+    async def slm_rank_search_hits(query: str, hits: list[dict[str, Any]]) -> str:
+        """Rank code-search hits, preferring likely definition sites."""
+        result = await _run_subroutine_tool(
+            "Rank search hits",
+            "search_rank",
+            {"query": query, "hits": hits},
+        )
+        return _json(result)
+
     @server.tool()
     def slm_get_trace(trace_id: str | None = None, limit: int = 5) -> str:
         """Fetch a trace by id or list recent traces for eval/debugging."""
@@ -162,6 +196,10 @@ def create_server() -> Any:
                     "slm_run_task",
                     "slm_verify_result",
                     "slm_verify_escalation",
+                    "slm_repair_json",
+                    "slm_localize_traceback",
+                    "slm_generate_search_queries",
+                    "slm_rank_search_hits",
                     "slm_get_trace",
                     "slm_codex_probe",
                 ],
@@ -228,10 +266,24 @@ async def _run_verifier_escalation(
     }
 
 
+async def _run_subroutine_tool(goal: str, task_type: TaskType, shared: dict[str, Any]) -> dict[str, Any]:
+    subtask = Subtask(goal=goal, input=str(shared.get("raw") or shared.get("task") or shared.get("query") or goal), task_type=task_type)
+    context = TaskContext(root_goal=goal, shared=shared)
+    decision = _ENGINE.route_subtask(subtask)
+    result = await _ENGINE._execute_decision(subtask, context, decision)
+    verification = _ENGINE.verifier.verify(subtask, result)
+    return {
+        "subtask": subtask.model_dump(mode="json"),
+        "decision": decision.model_dump(mode="json"),
+        "result": result.model_dump(mode="json"),
+        "verification": verification.model_dump(mode="json"),
+    }
+
+
 def _parse_task_type(value: str | None) -> TaskType | None:
     if value is None or value == "":
         return None
-    allowed = {"route", "classify", "extract", "verify", "code", "tool", "reason", "unknown"}
+    allowed = {"route", "classify", "extract", "verify", "code", "tool", "reason", "json_repair", "trace_localize", "search_query", "search_rank", "unknown"}
     if value not in allowed:
         raise ValueError(f"Unsupported task_type: {value}")
     return cast(TaskType, value)

@@ -1,0 +1,6 @@
+mode,tasks,success_rate,schema_valid_rate,verifier_pass_rate,latency_p50_ms,latency_p95_ms,estimated_cost_per_task_usd,estimated_cost_per_success_usd,fallback_rate,gpu_memory_mb
+deterministic_only,4,0.75,0.75,0.75,0.289486000042416,0.29545300003519515,0.0,0.0,0.25,0
+slm_only,4,1.0,1.0,1.0,0.03765799999655428,0.09274400008507655,0.0,0.0,1.0,0
+deterministic_slm_fallback,4,1.0,1.0,1.0,0.0353780000068582,0.08606899996266293,0.0,0.0,0.25,0
+deterministic_slm_frontier_stub,4,1.0,1.0,1.0,0.037789999964843446,0.09231300009560073,0.0,0.0,0.25,0
+mcp_full_agent_path,4,1.0,1.0,1.0,0.17004999995151593,0.29014699998697324,0.0,0.0,0.25,0

@@ -9,7 +9,7 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 
-TaskType = Literal["route", "classify", "extract", "verify", "code", "tool", "reason", "unknown"]
+TaskType = Literal["route", "classify", "extract", "verify", "code", "tool", "reason", "json_repair", "trace_localize", "search_query", "search_rank", "unknown"]
 ExecutorKind = Literal["deterministic", "classifier", "task_slm", "frontier_llm", "mcp_tool"]
 TraceEventType = Literal["decompose", "route", "execute", "verify", "escalate", "complete"]
 

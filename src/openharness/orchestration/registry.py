@@ -7,9 +7,13 @@ from openharness.orchestration.executors import (
     CodeHeuristicExecutor,
     FrontierHandoffExecutor,
     HeuristicVerifierExecutor,
+    JsonRepairSlmExecutor,
     KeywordClassifierExecutor,
     RegexExtractorExecutor,
+    SearchHitRankerSlmExecutor,
+    SearchQueryGenSlmExecutor,
     TinySlmStubExecutor,
+    TraceLocalizerSlmExecutor,
     VerifierEscalationClassifierExecutor,
 )
 from openharness.orchestration.types import ExecutorProfile, TaskType
@@ -55,6 +59,10 @@ def build_default_executor_registry() -> ExecutorRegistry:
     registry = ExecutorRegistry()
     registry.register(KeywordClassifierExecutor())
     registry.register(RegexExtractorExecutor())
+    registry.register(JsonRepairSlmExecutor())
+    registry.register(TraceLocalizerSlmExecutor())
+    registry.register(SearchQueryGenSlmExecutor())
+    registry.register(SearchHitRankerSlmExecutor())
     registry.register(VerifierEscalationClassifierExecutor())
     registry.register(HeuristicVerifierExecutor())
     registry.register(TinySlmStubExecutor())
