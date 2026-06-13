@@ -8,7 +8,7 @@ from typing import Any, cast
 
 from openharness.orchestration.codex import build_codex_mcp_config_snippet
 from openharness.orchestration.engine import build_default_orchestration_engine
-from openharness.orchestration.types import ExecutorResult, Subtask, TaskContext, TaskType
+from openharness.orchestration.types import Subtask, TaskContext, TaskType
 
 
 INSTRUCTIONS = (
@@ -92,23 +92,51 @@ def create_server() -> Any:
         return _json({"trace": trace.model_dump(mode="json")})
 
     @server.tool()
-    def slm_verify_result(
+    async def slm_verify_result(
         goal: str,
         output: str,
         task_type: str | None = None,
         confidence: float = 0.8,
     ) -> str:
         """Verify an externally produced result against the same local verifier contract."""
-        subtask = Subtask(goal=goal, input=goal, task_type=_parse_task_type(task_type) or "unknown")
-        result = ExecutorResult(
-            subtask_id=subtask.id,
+        payload = await _run_verifier_escalation(
+            goal=goal,
+            output=output,
+            task_type=task_type,
+            confidence=confidence,
             executor_name="external.candidate",
             executor_kind="mcp_tool",
-            output=output,
-            confidence=max(0.0, min(1.0, confidence)),
+            logs="",
+            diff="",
+            screenshot_summary="",
         )
-        verification = _ENGINE.verifier.verify(subtask, result)
-        return _json({"verification": verification.model_dump(mode="json")})
+        return _json(payload)
+
+    @server.tool()
+    async def slm_verify_escalation(
+        task: str,
+        output: str,
+        task_type: str | None = None,
+        confidence: float = 0.8,
+        executor_name: str = "external.candidate",
+        executor_kind: str = "mcp_tool",
+        logs: str = "",
+        diff: str = "",
+        screenshot_summary: str = "",
+    ) -> str:
+        """Classify whether a task result is accepted or needs frontier escalation."""
+        payload = await _run_verifier_escalation(
+            goal=task,
+            output=output,
+            task_type=task_type,
+            confidence=confidence,
+            executor_name=executor_name,
+            executor_kind=executor_kind,
+            logs=logs,
+            diff=diff,
+            screenshot_summary=screenshot_summary,
+        )
+        return _json(payload)
 
     @server.tool()
     def slm_get_trace(trace_id: str | None = None, limit: int = 5) -> str:
@@ -133,6 +161,7 @@ def create_server() -> Any:
                     "slm_route_task",
                     "slm_run_task",
                     "slm_verify_result",
+                    "slm_verify_escalation",
                     "slm_get_trace",
                     "slm_codex_probe",
                 ],
@@ -154,6 +183,49 @@ def main() -> None:
 
 def _json(payload: dict[str, Any]) -> str:
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+async def _run_verifier_escalation(
+    *,
+    goal: str,
+    output: str,
+    task_type: str | None,
+    confidence: float,
+    executor_name: str,
+    executor_kind: str,
+    logs: str,
+    diff: str,
+    screenshot_summary: str,
+) -> dict[str, Any]:
+    candidate_type = _parse_task_type(task_type)
+    subtask = Subtask(
+        goal=f"Verify result for: {goal}",
+        input=goal,
+        task_type="verify",
+        metadata={"candidate_task_type": candidate_type or "unknown"},
+    )
+    context = TaskContext(
+        root_goal=goal,
+        shared={
+            "task": goal,
+            "candidate_task_type": candidate_type or "unknown",
+            "candidate_output": output,
+            "executor_confidence": max(0.0, min(1.0, confidence)),
+            "executor_name": executor_name,
+            "executor_kind": executor_kind,
+            "logs": logs,
+            "diff": diff,
+            "screenshot_summary": screenshot_summary,
+        },
+    )
+    executor = _ENGINE.registry.require("local.verifier_escalation_classifier")
+    result = await executor.execute(subtask, context)
+    verification = _ENGINE.verifier.verify(subtask, result)
+    return {
+        "result": result.model_dump(mode="json"),
+        "verification": verification.model_dump(mode="json"),
+        "decision": result.output,
+    }
 
 
 def _parse_task_type(value: str | None) -> TaskType | None:

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from openharness.orchestration.types import ExecutorResult, Subtask, VerificationResult
 
 
@@ -20,6 +22,29 @@ class ResultVerifier:
     ) -> VerificationResult:
         """Return an accept/reject decision for a result."""
         effective_threshold = self.threshold if threshold is None else threshold
+        structured = _structured_prediction(result.output)
+        if structured is not None:
+            confidence = _bounded_float(structured.get("confidence"), result.confidence)
+            escalate = bool(structured.get("escalate", False))
+            accepted = bool(structured.get("accepted", False)) and not escalate
+            if confidence < effective_threshold:
+                accepted = False
+            return VerificationResult(
+                subtask_id=subtask.id,
+                accepted=accepted,
+                confidence=confidence,
+                threshold=effective_threshold,
+                verifier=str(structured.get("source") or result.executor_name),
+                reason=(
+                    str(structured.get("reason") or structured.get("label") or "structured_verifier")
+                    if accepted
+                    else str(
+                        structured.get("reason")
+                        or structured.get("label")
+                        or "structured_verifier_rejected"
+                    )
+                ),
+            )
         if result.error:
             return VerificationResult(
                 subtask_id=subtask.id,
@@ -52,3 +77,20 @@ class ResultVerifier:
                 else "low_confidence_or_empty_output"
             ),
         )
+
+
+def _structured_prediction(output: Any) -> dict[str, Any] | None:
+    if not isinstance(output, dict):
+        return None
+    required = {"accepted", "confidence", "escalate"}
+    if required.issubset(output.keys()):
+        return output
+    return None
+
+
+def _bounded_float(value: Any, default: float) -> float:
+    if isinstance(value, bool):
+        return default
+    if isinstance(value, (int, float)):
+        return max(0.0, min(1.0, float(value)))
+    return default

@@ -26,6 +26,20 @@ def test_route_prefers_cheapest_reliable_local_executor_for_extraction() -> None
     assert decision.candidates[0].executor_name == "local.regex_extractor"
 
 
+def test_route_prefers_verifier_escalation_classifier_for_verify_tasks() -> None:
+    engine = build_default_orchestration_engine()
+
+    subtask, decision = engine.route_goal(
+        "Verify whether a tool result should be accepted",
+        task_type="verify",
+        min_reliability=0.7,
+    )
+
+    assert subtask.task_type == "verify"
+    assert decision.selected_executor == "local.verifier_escalation_classifier"
+    assert decision.should_escalate is False
+
+
 @pytest.mark.asyncio
 async def test_run_goal_records_local_result_metrics_and_trace() -> None:
     engine = build_default_orchestration_engine()
@@ -80,5 +94,6 @@ def test_executor_profiles_are_json_ready() -> None:
 
     encoded = json.dumps({"executors": engine.list_executors()})
 
+    assert "local.verifier_escalation_classifier" in encoded
     assert "local.tiny_slm_stub" in encoded
     assert "frontier.openharness_llm" in encoded

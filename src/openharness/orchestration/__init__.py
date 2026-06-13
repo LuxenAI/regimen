@@ -11,16 +11,24 @@ from openharness.orchestration.types import (
     TaskContext,
     VerificationResult,
 )
+from openharness.orchestration.verifier_model import (
+    HeuristicVerifierModel,
+    VerifierInput,
+    VerifierPrediction,
+)
 
 __all__ = [
     "ExecutorProfile",
     "ExecutorRegistry",
     "ExecutorResult",
+    "HeuristicVerifierModel",
     "OrchestrationEngine",
     "OrchestrationTrace",
     "RouteDecision",
     "Subtask",
     "TaskContext",
+    "VerifierInput",
+    "VerifierPrediction",
     "VerificationResult",
     "build_default_executor_registry",
     "build_default_orchestration_engine",

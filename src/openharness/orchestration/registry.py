@@ -10,6 +10,7 @@ from openharness.orchestration.executors import (
     KeywordClassifierExecutor,
     RegexExtractorExecutor,
     TinySlmStubExecutor,
+    VerifierEscalationClassifierExecutor,
 )
 from openharness.orchestration.types import ExecutorProfile, TaskType
 
@@ -54,6 +55,7 @@ def build_default_executor_registry() -> ExecutorRegistry:
     registry = ExecutorRegistry()
     registry.register(KeywordClassifierExecutor())
     registry.register(RegexExtractorExecutor())
+    registry.register(VerifierEscalationClassifierExecutor())
     registry.register(HeuristicVerifierExecutor())
     registry.register(TinySlmStubExecutor())
     registry.register(CodeHeuristicExecutor())

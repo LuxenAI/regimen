@@ -15,6 +15,11 @@ from openharness.orchestration.types import (
     Subtask,
     TaskContext,
 )
+from openharness.orchestration.verifier_model import (
+    VerifierClassifier,
+    build_verifier_model_from_env,
+    verifier_input_from_context,
+)
 
 
 class BaseExecutor(ABC):
@@ -147,6 +152,52 @@ class HeuristicVerifierExecutor(BaseExecutor):
             output={"accepted": accepted, "issues": [] if accepted else ["empty_or_error_like_output"]},
             confidence=0.78 if accepted else 0.48,
             started_at=started,
+        )
+
+
+class VerifierEscalationClassifierExecutor(BaseExecutor):
+    """Verifier/escalation classifier for deciding whether frontier review is needed."""
+
+    def __init__(self, model: VerifierClassifier | None = None) -> None:
+        self._model = model or build_verifier_model_from_env()
+        self.profile = ExecutorProfile(
+            name="local.verifier_escalation_classifier",
+            kind="classifier",
+            description=(
+                "CPU-local verifier/escalation classifier over task, result, logs, diff, "
+                "and screenshot summary."
+            ),
+            supported_task_types=["verify"],
+            local=True,
+            reliability=0.86,
+            cost_per_call_usd=0.0,
+            p50_latency_ms=1,
+            metadata={
+                "output_schema": {
+                    "accepted": "bool",
+                    "confidence": "float",
+                    "escalate": "bool",
+                },
+                "model_slot": "BERT-Tiny compatible <10M parameter verifier",
+                "env_model_dir": "SLM_HARNESS_VERIFIER_MODEL_DIR",
+            },
+        )
+
+    async def execute(self, subtask: Subtask, context: TaskContext) -> ExecutorResult:
+        started = time.perf_counter()
+        verifier_input = verifier_input_from_context(subtask, shared=context.shared)
+        prediction = self._model.predict(verifier_input)
+        return self._result(
+            subtask,
+            output=prediction.model_dump(mode="json"),
+            confidence=prediction.confidence,
+            started_at=started,
+            escalated=prediction.escalate,
+            metadata={
+                "verifier_source": prediction.source,
+                "verifier_label": prediction.label,
+                "input": verifier_input.model_dump(mode="json"),
+            },
         )
 
 
