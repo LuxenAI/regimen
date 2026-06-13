@@ -5,9 +5,11 @@ from __future__ import annotations
 from openharness.orchestration.executors import (
     BaseExecutor,
     CodeHeuristicExecutor,
+    FailureClassifierSlmExecutor,
     FrontierHandoffExecutor,
     HeuristicVerifierExecutor,
     JsonRepairSlmExecutor,
+    PatchRiskClassifierSlmExecutor,
     KeywordClassifierExecutor,
     RegexExtractorExecutor,
     SearchHitRankerSlmExecutor,
@@ -63,6 +65,8 @@ def build_default_executor_registry() -> ExecutorRegistry:
     registry.register(TraceLocalizerSlmExecutor())
     registry.register(SearchQueryGenSlmExecutor())
     registry.register(SearchHitRankerSlmExecutor())
+    registry.register(FailureClassifierSlmExecutor())
+    registry.register(PatchRiskClassifierSlmExecutor())
     registry.register(VerifierEscalationClassifierExecutor())
     registry.register(HeuristicVerifierExecutor())
     registry.register(TinySlmStubExecutor())

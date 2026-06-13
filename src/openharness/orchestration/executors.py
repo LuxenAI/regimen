@@ -8,11 +8,11 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from openharness.orchestration.decomposer import WorkflowDecomposer
-from openharness.orchestration.subroutine_models import (
-    generate_search_queries_subroutine,
-    localize_traceback_subroutine,
-    rank_search_hits_subroutine,
-    repair_json_subroutine,
+from openharness.orchestration.slm_config import SlmRouteConfig, load_slm_harness_config
+from openharness.orchestration.slm_runner import (
+    SlmRunRequest,
+    run_slm_subroutine,
+    slm_response_to_subroutine_output,
 )
 from openharness.orchestration.types import (
     ExecutorKind,
@@ -20,6 +20,7 @@ from openharness.orchestration.types import (
     ExecutorResult,
     Subtask,
     TaskContext,
+    TaskType,
 )
 from openharness.orchestration.verifier_model import (
     VerifierClassifier,
@@ -211,33 +212,28 @@ class JsonRepairSlmExecutor(BaseExecutor):
     """JSON repair executor with deterministic parse before SLM-style fallback."""
 
     def __init__(self) -> None:
+        route = _route_config("json_repair")
         self.profile = ExecutorProfile(
             name="local.json_repair_slm",
             kind="task_slm",
             description="Repair malformed JSON tool payloads with deterministic-first SLM fallback semantics.",
             supported_task_types=["json_repair"],
-            local=True,
-            reliability=0.9,
-            cost_per_call_usd=0.0,
-            p50_latency_ms=3,
-            metadata={"model_id": "ishaanranjan/slm-agent-json-repair-smollm2-360m"},
+            local=route.backend != "remote_http",
+            reliability=route.reliability,
+            cost_per_call_usd=route.cost_per_call_usd,
+            p50_latency_ms=_expected_latency_ms(route),
+            metadata=_route_metadata(route),
         )
 
     async def execute(self, subtask: Subtask, context: TaskContext) -> ExecutorResult:
-        started = time.perf_counter()
         raw = str(context.shared.get("raw") or context.shared.get("candidate_output") or subtask.input or subtask.goal)
-        run = repair_json_subroutine(raw)
-        return self._subroutine_result(subtask, run.as_output(), started, run.success)
-
-    def _subroutine_result(self, subtask: Subtask, output: dict[str, Any], started: float, success: bool) -> ExecutorResult:
-        return self._result(
+        return await _execute_slm_subroutine(
+            self,
             subtask,
-            output=output,
-            confidence=0.9 if success else 0.2,
-            started_at=started,
-            escalated=not success,
-            error=output.get("error") if not success else None,
-            metadata=_subroutine_metadata(output, subtask),
+            context,
+            "json_repair",
+            {"raw": raw},
+            _schema_for_task_type("json_repair"),
         )
 
 
@@ -245,31 +241,29 @@ class TraceLocalizerSlmExecutor(BaseExecutor):
     """Traceback localizer executor for culprit project frame detection."""
 
     def __init__(self) -> None:
+        route = _route_config("trace_localize")
         self.profile = ExecutorProfile(
             name="local.trace_localizer_slm",
             kind="task_slm",
             description="Localize Python traceback culprit frame and failure category.",
             supported_task_types=["trace_localize"],
-            local=True,
-            reliability=0.88,
-            cost_per_call_usd=0.0,
-            p50_latency_ms=3,
-            metadata={"model_id": "ishaanranjan/slm-agent-trace-localizer-qwen2-5-0-5b"},
+            local=route.backend != "remote_http",
+            reliability=route.reliability,
+            cost_per_call_usd=route.cost_per_call_usd,
+            p50_latency_ms=_expected_latency_ms(route),
+            metadata=_route_metadata(route),
         )
 
     async def execute(self, subtask: Subtask, context: TaskContext) -> ExecutorResult:
-        started = time.perf_counter()
         traceback = str(context.shared.get("traceback") or subtask.input or subtask.goal)
         project_prefix = str(context.shared.get("project_prefix") or "")
-        run = localize_traceback_subroutine(traceback, project_prefix=project_prefix)
-        return self._result(
+        return await _execute_slm_subroutine(
+            self,
             subtask,
-            output=run.as_output(),
-            confidence=float(run.output.get("confidence", 0.0)),
-            started_at=started,
-            escalated=not run.success,
-            error=run.error,
-            metadata=_subroutine_metadata(run.as_output(), subtask),
+            context,
+            "trace_localize",
+            {"traceback": traceback, "project_prefix": project_prefix},
+            _schema_for_task_type("trace_localize"),
         )
 
 
@@ -277,30 +271,28 @@ class SearchQueryGenSlmExecutor(BaseExecutor):
     """Search-query generation executor for coding tasks."""
 
     def __init__(self) -> None:
+        route = _route_config("search_query")
         self.profile = ExecutorProfile(
             name="local.search_query_gen_slm",
             kind="task_slm",
             description="Generate code-search query candidates for a coding task.",
             supported_task_types=["search_query"],
-            local=True,
-            reliability=0.82,
-            cost_per_call_usd=0.0,
-            p50_latency_ms=3,
-            metadata={"model_id": "ishaanranjan/slm-agent-search-query-gen-qwen2-5-0-5b"},
+            local=route.backend != "remote_http",
+            reliability=route.reliability,
+            cost_per_call_usd=route.cost_per_call_usd,
+            p50_latency_ms=_expected_latency_ms(route),
+            metadata=_route_metadata(route),
         )
 
     async def execute(self, subtask: Subtask, context: TaskContext) -> ExecutorResult:
-        started = time.perf_counter()
         task = str(context.shared.get("task") or subtask.input or subtask.goal)
-        run = generate_search_queries_subroutine(task)
-        return self._result(
+        return await _execute_slm_subroutine(
+            self,
             subtask,
-            output=run.as_output(),
-            confidence=float(run.output.get("confidence", 0.0)),
-            started_at=started,
-            escalated=not run.success,
-            error=run.error,
-            metadata=_subroutine_metadata(run.as_output(), subtask),
+            context,
+            "search_query",
+            {"task": task},
+            _schema_for_task_type("search_query"),
         )
 
 
@@ -308,33 +300,175 @@ class SearchHitRankerSlmExecutor(BaseExecutor):
     """Search-hit ranking executor for selecting definition-like results."""
 
     def __init__(self) -> None:
+        route = _route_config("search_rank")
         self.profile = ExecutorProfile(
             name="local.search_hit_ranker_slm",
             kind="task_slm",
             description="Rank code-search hits and prefer definition sites.",
             supported_task_types=["search_rank"],
-            local=True,
-            reliability=0.9,
-            cost_per_call_usd=0.0,
-            p50_latency_ms=3,
-            metadata={"model_id": "ishaanranjan/slm-agent-search-hit-ranker-qwen2-5-0-5b"},
+            local=route.backend != "remote_http",
+            reliability=route.reliability,
+            cost_per_call_usd=route.cost_per_call_usd,
+            p50_latency_ms=_expected_latency_ms(route),
+            metadata=_route_metadata(route),
         )
 
     async def execute(self, subtask: Subtask, context: TaskContext) -> ExecutorResult:
-        started = time.perf_counter()
         query = str(context.shared.get("query") or subtask.input or subtask.goal)
         raw_hits = context.shared.get("hits") or []
         hits = raw_hits if isinstance(raw_hits, list) else []
-        run = rank_search_hits_subroutine(query, hits)
-        return self._result(
+        return await _execute_slm_subroutine(
+            self,
             subtask,
-            output=run.as_output(),
-            confidence=float(run.output.get("confidence", 0.0)),
-            started_at=started,
-            escalated=not run.success,
-            error=run.error,
-            metadata=_subroutine_metadata(run.as_output(), subtask),
+            context,
+            "search_rank",
+            {"query": query, "hits": hits},
+            _schema_for_task_type("search_rank"),
         )
+
+
+class FailureClassifierSlmExecutor(BaseExecutor):
+    """Failure classifier for logs, stack traces, and CI output."""
+
+    def __init__(self) -> None:
+        route = _route_config("failure_classify")
+        self.profile = ExecutorProfile(
+            name="local.failure_classifier_slm",
+            kind="task_slm",
+            description="Classify compiler, test, runtime, frontend, sandbox, and dependency failures.",
+            supported_task_types=["failure_classify"],
+            local=route.backend != "remote_http",
+            reliability=route.reliability,
+            cost_per_call_usd=route.cost_per_call_usd,
+            p50_latency_ms=_expected_latency_ms(route),
+            metadata=_route_metadata(route),
+        )
+
+    async def execute(self, subtask: Subtask, context: TaskContext) -> ExecutorResult:
+        text = str(context.shared.get("text") or context.shared.get("logs") or subtask.input or subtask.goal)
+        return await _execute_slm_subroutine(
+            self,
+            subtask,
+            context,
+            "failure_classify",
+            {"text": text},
+            _schema_for_task_type("failure_classify"),
+        )
+
+
+class PatchRiskClassifierSlmExecutor(BaseExecutor):
+    """Patch-risk classifier for deciding test and review requirements."""
+
+    def __init__(self) -> None:
+        route = _route_config("patch_risk")
+        self.profile = ExecutorProfile(
+            name="local.patch_risk_classifier_slm",
+            kind="task_slm",
+            description="Classify diff risk, affected subsystem, and review/test escalation needs.",
+            supported_task_types=["patch_risk"],
+            local=route.backend != "remote_http",
+            reliability=route.reliability,
+            cost_per_call_usd=route.cost_per_call_usd,
+            p50_latency_ms=_expected_latency_ms(route),
+            metadata=_route_metadata(route),
+        )
+
+    async def execute(self, subtask: Subtask, context: TaskContext) -> ExecutorResult:
+        diff = str(context.shared.get("diff") or subtask.input or subtask.goal)
+        tests = str(context.shared.get("tests") or context.shared.get("logs") or "")
+        return await _execute_slm_subroutine(
+            self,
+            subtask,
+            context,
+            "patch_risk",
+            {"diff": diff, "tests": tests},
+            _schema_for_task_type("patch_risk"),
+        )
+
+
+async def _execute_slm_subroutine(
+    executor: BaseExecutor,
+    subtask: Subtask,
+    context: TaskContext,
+    task_type: TaskType,
+    payload: dict[str, Any],
+    schema: dict[str, Any],
+) -> ExecutorResult:
+    response = await run_slm_subroutine(
+        SlmRunRequest(
+            task_type=task_type,
+            input=payload,
+            schema=schema,
+            model_id=str(executor.profile.metadata.get("model_id") or ""),
+            backend="auto",
+            timeout_ms=int(executor.profile.metadata.get("timeout_ms") or 30_000),
+            trace_id=context.trace_id,
+        )
+    )
+    output = slm_response_to_subroutine_output(task_type, response)
+    success = bool(output.get("success"))
+    return ExecutorResult(
+        subtask_id=subtask.id,
+        executor_name=executor.profile.name,
+        executor_kind=executor.profile.kind,
+        output=output,
+        confidence=response.confidence,
+        cost_usd=response.cost_usd,
+        latency_ms=max(response.latency_ms, executor.profile.p50_latency_ms),
+        escalated=not success,
+        error=response.error if not success else None,
+        metadata=_subroutine_metadata(output, subtask),
+    )
+
+
+def _route_config(task_type: TaskType) -> SlmRouteConfig:
+    return load_slm_harness_config().route_for(task_type)
+
+
+def _route_metadata(route: SlmRouteConfig) -> dict[str, Any]:
+    return {
+        "model_id": route.model_id,
+        "backend": route.backend,
+        "model_path": route.model_path,
+        "remote_url": route.remote_url,
+        "timeout_ms": route.timeout_ms,
+        "fallback_policy": route.fallback_policy,
+        "min_confidence": route.min_confidence,
+    }
+
+
+def _expected_latency_ms(route: SlmRouteConfig) -> int:
+    if route.backend == "remote_http" or route.remote_url:
+        return 250
+    if route.backend in {"local_transformers", "local_onnx"} or route.model_path:
+        return 50
+    return 3
+
+
+def _schema_for_task_type(task_type: TaskType) -> dict[str, Any]:
+    required_by_type: dict[TaskType, list[str]] = {
+        "json_repair": [],
+        "trace_localize": ["likely_file", "likely_symbol", "line", "category", "confidence"],
+        "search_query": ["queries", "confidence"],
+        "search_rank": ["ranked_hit_ids", "confidence"],
+        "failure_classify": ["category", "confidence", "rationale"],
+        "patch_risk": [
+            "risk_level",
+            "confidence",
+            "affected_subsystems",
+            "tests_needed",
+            "human_review_needed",
+        ],
+        "route": [],
+        "classify": [],
+        "extract": [],
+        "verify": [],
+        "code": [],
+        "tool": [],
+        "reason": [],
+        "unknown": [],
+    }
+    return {"type": "object", "required": required_by_type[task_type]}
 
 
 def _subroutine_metadata(output: dict[str, Any], subtask: Subtask) -> dict[str, Any]:
@@ -342,9 +476,11 @@ def _subroutine_metadata(output: dict[str, Any], subtask: Subtask) -> dict[str, 
         "executor_name": output.get("subroutine"),
         "model_id": output.get("model_id"),
         "local": output.get("local", True),
+        "backend": output.get("backend"),
         "success": output.get("success"),
         "verifier_result": output.get("verifier_pass"),
         "fallback_path": output.get("fallback_path"),
+        "attempts": output.get("attempts", []),
         "trace_id": subtask.metadata.get("trace_id"),
     }
 

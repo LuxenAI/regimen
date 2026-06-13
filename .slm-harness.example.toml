@@ -1,0 +1,44 @@
+[defaults]
+backend = "auto"
+timeout_ms = 30000
+concurrency = 1
+cost_per_call_usd = 0.0
+reliability = 0.82
+fallback_policy = "deterministic_first"
+min_confidence = 0.70
+
+[subroutines.json_repair]
+backend = "auto"
+model_id = "ishaanranjan/slm-agent-json-repair-smollm2-360m"
+
+[subroutines.trace_localize]
+backend = "auto"
+model_id = "ishaanranjan/slm-agent-trace-localizer-qwen2-5-0-5b"
+
+[subroutines.search_query]
+backend = "auto"
+model_id = "ishaanranjan/slm-agent-search-query-gen-qwen2-5-0-5b"
+
+[subroutines.search_rank]
+backend = "auto"
+model_id = "ishaanranjan/slm-agent-search-hit-ranker-qwen2-5-0-5b"
+
+[subroutines.failure_classify]
+backend = "deterministic"
+model_id = "local/failure-classifier-rules-v1"
+
+[subroutines.patch_risk]
+backend = "deterministic"
+model_id = "local/patch-risk-classifier-rules-v1"
+
+# Example cloud route:
+# [subroutines.search_query]
+# backend = "remote_http"
+# remote_url = "https://your-vllm-host.example.com/slm/subroutine"
+# cost_per_call_usd = 0.00005
+# reliability = 0.90
+
+# Example local route:
+# [subroutines.json_repair]
+# backend = "local_transformers"
+# model_path = "/models/slm-agent-json-repair"

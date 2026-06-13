@@ -15,6 +15,8 @@ HF_SUBROUTINE_MODELS: dict[str, str] = {
     "trace_localize": "ishaanranjan/slm-agent-trace-localizer-qwen2-5-0-5b",
     "search_query": "ishaanranjan/slm-agent-search-query-gen-qwen2-5-0-5b",
     "search_rank": "ishaanranjan/slm-agent-search-hit-ranker-qwen2-5-0-5b",
+    "failure_classify": "local/failure-classifier-rules-v1",
+    "patch_risk": "local/patch-risk-classifier-rules-v1",
 }
 
 _CATEGORY_BY_EXCEPTION = {
@@ -28,6 +30,26 @@ _CATEGORY_BY_EXCEPTION = {
     "ZeroDivisionError": "arithmetic",
     "SyntaxError": "syntax_error",
 }
+
+_FAILURE_PATTERNS: tuple[tuple[str, str, float], ...] = (
+    (r"\b(modulenotfounderror|importerror|cannot find module|no module named)\b", "dependency_issue", 0.9),
+    (r"\b(syntaxerror|unexpected token|invalid syntax|parse error)\b", "syntax_error", 0.9),
+    (r"\b(typeerror|mypy|ts\d{4}|is not assignable|has no attribute)\b", "type_error", 0.84),
+    (r"\b(fixture .* not found|unknown fixture|missing fixture)\b", "missing_fixture", 0.88),
+    (r"\b(flaky|timed out|timeout|race condition|intermittent)\b", "flaky_test", 0.76),
+    (r"\b(blank screen|white screen|hydration|console error|not visible|overlap)\b", "frontend_render_issue", 0.82),
+    (r"\b(network unreachable|permission denied|sandbox|econnrefused|dns|forbidden)\b", "sandbox_network_issue", 0.8),
+    (r"\b(assertionerror|expected .* actual|assert .*\bfailed\b)\b", "assertion_failure", 0.78),
+)
+
+_PATCH_RISK_PATTERNS: tuple[tuple[str, str], ...] = (
+    (r"\b(auth|authentication|authorization|oauth|jwt|session|cookie)\b", "auth"),
+    (r"\b(payment|billing|invoice|checkout|stripe|paypal)\b", "billing"),
+    (r"\b(password|secret|token|private key|credential|api[_-]?key)\b", "secrets"),
+    (r"\b(drop table|delete from|truncate|migration|schema)\b", "database"),
+    (r"\b(subprocess|shell=True|eval\(|exec\(|os\.system|rm -rf)\b", "command_execution"),
+    (r"\b(permission|sandbox|policy|admin|role)\b", "permissions"),
+)
 
 @dataclass
 class SubroutineRun:
@@ -119,6 +141,39 @@ def rank_search_hits_subroutine(query: str, hits: list[dict[str, Any]]) -> Subro
     return _run("search_rank", output, success, success, "deterministic_rank_rules", model_id, started, [{"stage": "deterministic_rank_rules", "ok": success}], None if success else "no hits supplied")
 
 
+def classify_failure_subroutine(text: str) -> SubroutineRun:
+    started = time.perf_counter()
+    model_id = HF_SUBROUTINE_MODELS["failure_classify"]
+    output = classify_failure_rules(text)
+    success = output["category"] != "unknown"
+    return _run(
+        "failure_classify",
+        output,
+        True,
+        True,
+        "deterministic_failure_rules",
+        model_id,
+        started,
+        [{"stage": "deterministic_failure_rules", "ok": success}],
+    )
+
+
+def classify_patch_risk_subroutine(diff: str, *, tests: str = "") -> SubroutineRun:
+    started = time.perf_counter()
+    model_id = HF_SUBROUTINE_MODELS["patch_risk"]
+    output = classify_patch_risk_rules(diff, tests=tests)
+    return _run(
+        "patch_risk",
+        output,
+        True,
+        True,
+        "deterministic_patch_risk_rules",
+        model_id,
+        started,
+        [{"stage": "deterministic_patch_risk_rules", "ok": True}],
+    )
+
+
 def localize_traceback_rules(traceback: str, *, project_prefix: str = "") -> dict[str, Any]:
     last_chain = traceback.split("During handling of the above exception")[-1]
     frames = re.findall(r'File "([^"]+)", line (\d+), in ([^\n]+)', last_chain)
@@ -177,6 +232,55 @@ def rank_search_hits_rules(query: str, hits: list[dict[str, Any]]) -> list[Any]:
         scored.append((score, hit_id))
     scored.sort(key=lambda item: (-item[0], str(item[1])))
     return [hit_id for _, hit_id in scored]
+
+
+def classify_failure_rules(text: str) -> dict[str, Any]:
+    lowered = text.lower()
+    for pattern, category, confidence in _FAILURE_PATTERNS:
+        if re.search(pattern, lowered, re.IGNORECASE):
+            return {
+                "category": category,
+                "confidence": confidence,
+                "rationale": f"matched {category} failure signature",
+            }
+    return {
+        "category": "unknown",
+        "confidence": 0.42 if text.strip() else 0.0,
+        "rationale": "no high-confidence failure signature matched",
+    }
+
+
+def classify_patch_risk_rules(diff: str, *, tests: str = "") -> dict[str, Any]:
+    combined = f"{diff}\n{tests}".lower()
+    affected: list[str] = []
+    for pattern, subsystem in _PATCH_RISK_PATTERNS:
+        if re.search(pattern, combined, re.IGNORECASE) and subsystem not in affected:
+            affected.append(subsystem)
+
+    added_removed = len(re.findall(r"^[+-](?![+-])", diff, re.MULTILINE))
+    passed = bool(re.search(r"\b(0 failed|passed|all tests pass|lint passed|typecheck passed)\b", tests, re.I))
+    failed = bool(re.search(r"\b(failed|traceback|exception|error:|npm err)\b", tests, re.I))
+
+    if "secrets" in affected or "command_execution" in affected:
+        risk = "high"
+    elif failed or "auth" in affected or "billing" in affected or added_removed > 120:
+        risk = "high"
+    elif affected or added_removed > 30:
+        risk = "medium"
+    else:
+        risk = "low"
+
+    tests_needed = risk != "low" or not passed
+    human_review_needed = risk == "high" or ("database" in affected and not passed)
+    confidence = {"low": 0.76, "medium": 0.81, "high": 0.88}[risk]
+    return {
+        "risk_level": risk,
+        "confidence": confidence,
+        "affected_subsystems": affected or ["general"],
+        "tests_needed": tests_needed,
+        "human_review_needed": human_review_needed,
+        "rationale": "risk based on diff-sensitive subsystem markers and test evidence",
+    }
 
 
 def _run(subroutine: str, output: dict[str, Any], success: bool, schema_valid: bool, fallback_path: str, model_id: str, started: float, attempts: list[dict[str, Any]], error: str | None = None) -> SubroutineRun:

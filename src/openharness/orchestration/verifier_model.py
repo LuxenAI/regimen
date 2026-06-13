@@ -27,7 +27,22 @@ ACCEPT_LABEL = "accept"
 DEFAULT_ACCEPT_THRESHOLD = 0.65
 
 _EXECUTOR_KINDS = {"deterministic", "classifier", "task_slm", "frontier_llm", "mcp_tool"}
-_TASK_TYPES = {"route", "classify", "extract", "verify", "code", "tool", "reason", "unknown"}
+_TASK_TYPES = {
+    "route",
+    "classify",
+    "extract",
+    "verify",
+    "code",
+    "tool",
+    "reason",
+    "json_repair",
+    "trace_localize",
+    "search_query",
+    "search_rank",
+    "failure_classify",
+    "patch_risk",
+    "unknown",
+}
 
 _FAILURE_RE = re.compile(
     r"\b("

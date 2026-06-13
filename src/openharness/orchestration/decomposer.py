@@ -54,6 +54,30 @@ class WorkflowDecomposer:
             return "search_query"
         if _has_any(lowered, ("rank search", "search hit", "rank hits")):
             return "search_rank"
+        if _has_any(
+            lowered,
+            (
+                "classify failure",
+                "failure classify",
+                "triage failure",
+                "test failure",
+                "compiler error",
+                "ci log",
+            ),
+        ):
+            return "failure_classify"
+        if _has_any(
+            lowered,
+            (
+                "patch risk",
+                "risk classify",
+                "classify diff",
+                "diff risk",
+                "needs review",
+                "review risk",
+            ),
+        ):
+            return "patch_risk"
         if _has_any(lowered, ("extract", "parse", "pull", "field", "email", "url", "json")):
             return "extract"
         if _has_any(lowered, ("classify", "label", "detect", "intent", "sentiment", "route")):

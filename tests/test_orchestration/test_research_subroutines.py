@@ -8,6 +8,8 @@ import pytest
 
 from openharness.orchestration.engine import build_default_orchestration_engine
 from openharness.orchestration.subroutine_models import (
+    classify_failure_subroutine,
+    classify_patch_risk_subroutine,
     generate_search_queries_subroutine,
     localize_traceback_subroutine,
     rank_search_hits_subroutine,
@@ -75,6 +77,21 @@ def test_search_hit_ranker_returns_stable_ranking() -> None:
 
     assert run.success is True
     assert run.output["ranked_hit_ids"][0] == "def"
+
+
+def test_failure_classifier_returns_category() -> None:
+    run = classify_failure_subroutine("ModuleNotFoundError: No module named 'rich'")
+
+    assert run.success is True
+    assert run.output["category"] == "dependency_issue"
+
+
+def test_patch_risk_classifier_flags_auth_risk() -> None:
+    run = classify_patch_risk_subroutine("+ return jwt.decode(token, SECRET)\n")
+
+    assert run.success is True
+    assert run.output["risk_level"] == "high"
+    assert run.output["human_review_needed"] is True
 
 
 @pytest.mark.asyncio

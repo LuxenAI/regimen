@@ -20,6 +20,8 @@ if str(SRC) not in sys.path:
 
 from openharness.orchestration.mcp_server import _run_subroutine_tool  # noqa: E402
 from openharness.orchestration.subroutine_models import (  # noqa: E402
+    classify_failure_subroutine,
+    classify_patch_risk_subroutine,
     generate_search_queries_subroutine,
     localize_traceback_subroutine,
     rank_search_hits_subroutine,
@@ -78,6 +80,11 @@ def cases() -> list[dict[str, Any]]:
         {"task_type": "trace_localize", "payload": {"traceback": traceback, "project_prefix": "/workspace/app/"}},
         {"task_type": "search_query", "payload": {"task": "Find the retry budget helper function"}},
         {"task_type": "search_rank", "payload": {"query": "retry_budget", "hits": hits}},
+        {"task_type": "failure_classify", "payload": {"text": "ModuleNotFoundError: No module named 'rich'"}},
+        {
+            "task_type": "patch_risk",
+            "payload": {"diff": "+ return jwt.decode(token, SECRET)\n", "tests": ""},
+        },
     ]
 
 
@@ -129,6 +136,10 @@ def run_direct(mode: str, task_type: str, payload: dict[str, Any]) -> dict[str, 
         run = generate_search_queries_subroutine(str(payload["task"]))
     elif task_type == "search_rank":
         run = rank_search_hits_subroutine(str(payload["query"]), payload["hits"])
+    elif task_type == "failure_classify":
+        run = classify_failure_subroutine(str(payload["text"]))
+    elif task_type == "patch_risk":
+        run = classify_patch_risk_subroutine(str(payload["diff"]), tests=str(payload.get("tests") or ""))
     else:
         raise ValueError(task_type)
     data = run.as_output()

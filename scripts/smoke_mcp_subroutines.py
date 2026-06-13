@@ -39,6 +39,16 @@ async def main() -> None:
                 ],
             },
         ),
+        (
+            "Classify failure",
+            "failure_classify",
+            {"text": "ModuleNotFoundError: No module named 'rich'"},
+        ),
+        (
+            "Classify patch risk",
+            "patch_risk",
+            {"diff": "+ return jwt.decode(token, SECRET)\n", "tests": ""},
+        ),
     ]
     results = []
     for goal, task_type, shared in cases:
