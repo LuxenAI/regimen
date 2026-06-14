@@ -33,6 +33,14 @@ def test_malformed_json_invokes_slm_fallback_and_returns_valid_json() -> None:
     assert run.fallback_path == "schema_slm_fallback"
 
 
+def test_bare_identifier_json_invokes_slm_fallback_and_returns_valid_json() -> None:
+    run = repair_json_subroutine("{action: SEARCH, pattern: retry_budget}")
+
+    assert run.success is True
+    assert run.output == {"action": "SEARCH", "pattern": "retry_budget"}
+    assert run.fallback_path == "schema_slm_fallback"
+
+
 def test_unrecoverable_json_fails_cleanly() -> None:
     run = repair_json_subroutine("not json at all", allow_slm=True)
 

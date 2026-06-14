@@ -320,8 +320,27 @@ def _slm_like_json_repair(raw: str) -> dict[str, Any] | None:
         pass
     repaired = re.sub(r",\s*([}\]])", r"\1", candidate)
     repaired = repaired.replace("None", "null").replace("True", "true").replace("False", "false")
+    repaired = _quote_bare_json_tokens(repaired)
     parsed, _ = _strict_json(repaired)
     return parsed
+
+
+def _quote_bare_json_tokens(raw: str) -> str:
+    """Recover common tool-call JSON errors without trying to parse arbitrary text."""
+
+    def quote_key(match: re.Match[str]) -> str:
+        return f'{match.group(1)}"{match.group(2)}":'
+
+    def quote_value(match: re.Match[str]) -> str:
+        token = match.group(1)
+        if token.lower() in {"true", "false", "null"}:
+            return f": {token.lower()}{match.group(2)}"
+        if re.fullmatch(r"-?\d+(?:\.\d+)?", token):
+            return f": {token}{match.group(2)}"
+        return f': "{token}"{match.group(2)}'
+
+    repaired = re.sub(r'([{\[,]\s*)([A-Za-z_][A-Za-z0-9_-]*)\s*:', quote_key, raw)
+    return re.sub(r":\s*([A-Za-z_][A-Za-z0-9_.-]*)\s*([,}\]])", quote_value, repaired)
 
 
 def _jsonable_dict(payload: dict[Any, Any]) -> dict[str, Any]:
