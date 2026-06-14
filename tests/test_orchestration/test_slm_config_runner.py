@@ -10,7 +10,7 @@ import pytest
 import httpx
 
 from openharness.orchestration.slm_config import load_slm_harness_config
-from openharness.orchestration.slm_runner import ConfiguredSlmRunner, SlmRunRequest
+from openharness.orchestration.slm_runner import ConfiguredSlmRunner, SlmRunRequest, _parse_model_output
 
 
 def test_load_config_file_and_env_override(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -39,6 +39,15 @@ def test_load_config_file_and_env_override(tmp_path: Path, monkeypatch: pytest.M
     assert route.remote_url == "https://models.example.test/infer"
     assert route.timeout_ms == 1234
     assert route.cost_per_call_usd == 0.001
+
+
+def test_parse_model_output_extracts_first_valid_json_object() -> None:
+    raw = (
+        ' {"action": "SEARCH", "pattern": "retry_budget"}\n'
+        'OUTPUT: {"action": "FAILURE", "reason": "Schema does not match"}'
+    )
+
+    assert _parse_model_output(raw) == {"action": "SEARCH", "pattern": "retry_budget"}
 
 
 @pytest.mark.asyncio

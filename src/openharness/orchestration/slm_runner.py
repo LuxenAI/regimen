@@ -527,12 +527,40 @@ def _parse_model_output(raw_text: str) -> Any:
     parsed = _try_json(text)
     if parsed is not None:
         return parsed
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if match:
-        parsed = _try_json(match.group(0))
+    for candidate in _iter_json_object_candidates(text):
+        parsed = _try_json(candidate)
         if parsed is not None:
             return parsed
     return {"text": text} if text else {}
+
+
+def _iter_json_object_candidates(text: str) -> list[str]:
+    candidates: list[str] = []
+    start: int | None = None
+    depth = 0
+    in_string = False
+    escape = False
+    for index, char in enumerate(text):
+        if in_string:
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            if depth == 0:
+                start = index
+            depth += 1
+        elif char == "}" and depth:
+            depth -= 1
+            if depth == 0 and start is not None:
+                candidates.append(text[start : index + 1])
+                start = None
+    return candidates
 
 
 def _remote_text(data: Any) -> str:
