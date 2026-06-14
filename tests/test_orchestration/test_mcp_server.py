@@ -36,6 +36,11 @@ async def test_orchestration_mcp_server_exposes_codex_facing_tools() -> None:
         assert "slm_route_task" in tool_names
         assert "slm_run_task" in tool_names
         assert "slm_verify_escalation" in tool_names
+        assert "slm_health" in tool_names
+        assert "slm_model_status" in tool_names
+        assert "slm_eval_manifest" in tool_names
+        assert "slm_classify_failure" in tool_names
+        assert "slm_classify_patch_risk" in tool_names
         assert "slm_codex_probe" in tool_names
 
         route_output = await manager.call_tool(
@@ -54,7 +59,18 @@ async def test_orchestration_mcp_server_exposes_codex_facing_tools() -> None:
         probe_payload = json.loads(probe_output)
         assert probe_payload["transport"] == "stdio"
         assert "[mcp_servers.slm_harness]" in probe_payload["codex_config_toml"]
+        assert "mcpServers" in probe_payload["claude_mcp_json"]
         assert "slm_verify_escalation" in probe_payload["tools"]
+
+        health_output = await manager.call_tool("slm_harness", "slm_health", {})
+        health_payload = json.loads(health_output)
+        assert health_payload["ok"] is True
+        assert "streamable-http" in health_payload["transports"]
+
+        manifest_output = await manager.call_tool("slm_harness", "slm_eval_manifest", {})
+        manifest_payload = json.loads(manifest_output)
+        assert "agent_session" in manifest_payload["scenario_types"]
+        assert "claude mcp add" in manifest_payload["claude_mcp_add_command"]
 
         accepted_output = await manager.call_tool(
             "slm_harness",

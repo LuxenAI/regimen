@@ -32,6 +32,7 @@ dependencies = [
     "python-telegram-bot>=21.0.0",
     "discord.py>=2.0.0",
     "lark-oapi>=1.5.0",
+    "tomli>=2.0.1; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]
@@ -42,6 +43,11 @@ dev = [
     "pytest-cov>=5.0.0",
     "ruff>=0.5.0",
     "mypy>=1.10.0",
+]
+slm = [
+    "torch>=2.0.0",
+    "transformers>=4.40.0",
+    "onnxruntime>=1.17.0",
 ]
 
 [project.scripts]

@@ -1,0 +1,11 @@
+{
+  "cost_per_success_usd": 0.0,
+  "estimated_token_savings": 1750,
+  "latency_p50_ms": 0.0,
+  "latency_p95_ms": 0.0,
+  "mcp_call_count": 3,
+  "mcp_call_rate": 1.0,
+  "sessions": 3,
+  "success_rate": 1.0,
+  "tool_call_count": 6
+}

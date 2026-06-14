@@ -1,0 +1,13 @@
+{
+  "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "train_path": "/root/slm-agents/slm_harness/results/subroutines/sft/trace_localizer/train.jsonl",
+  "n_train": 2000,
+  "epochs": 3.0,
+  "lr": 2e-05,
+  "batch_size": 16,
+  "grad_accum": 2,
+  "max_seq_len": 2048,
+  "seed": 0,
+  "train_seconds": 132.6,
+  "train_loss": 0.3698787951982149
+}

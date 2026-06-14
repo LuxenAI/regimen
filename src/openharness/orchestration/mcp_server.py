@@ -4,10 +4,17 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
+import sys
 from typing import Any, cast
 
-from openharness.orchestration.codex import build_codex_mcp_config_snippet
+from openharness.orchestration.codex import (
+    build_claude_mcp_add_command,
+    build_claude_mcp_json,
+    build_codex_mcp_config_snippet,
+)
 from openharness.orchestration.engine import build_default_orchestration_engine
+from openharness.orchestration.slm_config import slm_config_status
 from openharness.orchestration.types import Subtask, TaskContext, TaskType
 
 
@@ -138,6 +145,60 @@ def create_server() -> Any:
         )
         return _json(payload)
 
+
+
+    @server.tool()
+    async def slm_repair_json(raw: str) -> str:
+        """Repair malformed JSON through the JSON repair executor."""
+        result = await _run_subroutine_tool("Repair JSON", "json_repair", {"raw": raw})
+        return _json(result)
+
+    @server.tool()
+    async def slm_localize_traceback(traceback: str, project_prefix: str = "") -> str:
+        """Find the likely culprit project frame in a Python traceback."""
+        result = await _run_subroutine_tool(
+            "Localize traceback",
+            "trace_localize",
+            {"traceback": traceback, "project_prefix": project_prefix},
+        )
+        return _json(result)
+
+    @server.tool()
+    async def slm_generate_search_queries(task: str) -> str:
+        """Generate code-search query candidates for a coding task."""
+        result = await _run_subroutine_tool("Generate search queries", "search_query", {"task": task})
+        return _json(result)
+
+    @server.tool()
+    async def slm_rank_search_hits(query: str, hits: list[dict[str, Any]]) -> str:
+        """Rank code-search hits, preferring likely definition sites."""
+        result = await _run_subroutine_tool(
+            "Rank search hits",
+            "search_rank",
+            {"query": query, "hits": hits},
+        )
+        return _json(result)
+
+    @server.tool()
+    async def slm_classify_failure(text: str) -> str:
+        """Classify logs, stack traces, compiler output, or CI failures."""
+        result = await _run_subroutine_tool(
+            "Classify failure",
+            "failure_classify",
+            {"text": text},
+        )
+        return _json(result)
+
+    @server.tool()
+    async def slm_classify_patch_risk(diff: str, tests: str = "") -> str:
+        """Classify patch risk, affected subsystem, and review/test requirements."""
+        result = await _run_subroutine_tool(
+            "Classify patch risk",
+            "patch_risk",
+            {"diff": diff, "tests": tests},
+        )
+        return _json(result)
+
     @server.tool()
     def slm_get_trace(trace_id: str | None = None, limit: int = 5) -> str:
         """Fetch a trace by id or list recent traces for eval/debugging."""
@@ -148,6 +209,80 @@ def create_server() -> Any:
         return _json({"traces": [trace.model_dump(mode="json") for trace in traces]})
 
     @server.tool()
+    def slm_export_trace(trace_id: str | None = None, limit: int = 25) -> str:
+        """Export one trace or recent traces for eval harness ingestion."""
+        if trace_id:
+            trace = _ENGINE.trace_store.get(trace_id)
+            return _json({"format": "slm-harness-trace-v1", "trace": trace.model_dump(mode="json") if trace else None})
+        traces = _ENGINE.trace_store.recent(limit=max(1, min(limit, 100)))
+        return _json(
+            {
+                "format": "slm-harness-trace-v1",
+                "traces": [trace.model_dump(mode="json") for trace in traces],
+            }
+        )
+
+    @server.tool()
+    def slm_health() -> str:
+        """Return MCP runtime, executor, and model-route health."""
+        return _json(
+            {
+                "ok": True,
+                "server": "slm-harness",
+                "transports": ["stdio", "streamable-http"],
+                "executor_count": len(_ENGINE.list_executors()),
+                "executors": _ENGINE.list_executors(),
+                "model_status": slm_config_status(),
+            }
+        )
+
+    @server.tool()
+    def slm_model_status() -> str:
+        """Return resolved local/cloud SLM route configuration."""
+        return _json({"model_status": slm_config_status()})
+
+    @server.tool()
+    def slm_eval_manifest() -> str:
+        """Return the production eval plan, metrics, and client install snippets."""
+        return _json(
+            {
+                "manifest_version": "agent-session-evals-v1",
+                "drivers": ["replay", "codex_cli", "claude_code_cli"],
+                "baselines": [
+                    "no_mcp",
+                    "mcp_deterministic_only",
+                    "mcp_local_slm",
+                    "mcp_cloud_slm",
+                    "mcp_cloud_slm_frontier_fallback",
+                ],
+                "scenario_types": [
+                    "json_repair",
+                    "failure_classify",
+                    "trace_localize",
+                    "search_query",
+                    "search_rank",
+                    "patch_risk",
+                    "agent_session",
+                ],
+                "metrics": [
+                    "task_success",
+                    "schema_valid_rate",
+                    "verifier_pass_rate",
+                    "escalation_rate",
+                    "fallback_rate",
+                    "tool_call_count",
+                    "estimated_token_savings",
+                    "latency_p50_ms",
+                    "latency_p95_ms",
+                    "cost_per_success_usd",
+                ],
+                "codex_config_toml": build_codex_mcp_config_snippet(),
+                "claude_mcp_json": build_claude_mcp_json(),
+                "claude_mcp_add_command": build_claude_mcp_add_command(),
+            }
+        )
+
+    @server.tool()
     def slm_codex_probe() -> str:
         """Return Codex integration metadata and a local config.toml snippet."""
         return _json(
@@ -155,6 +290,8 @@ def create_server() -> Any:
                 "server": "slm-harness",
                 "transport": "stdio",
                 "codex_config_toml": build_codex_mcp_config_snippet(),
+                "claude_mcp_json": build_claude_mcp_json(),
+                "claude_mcp_add_command": build_claude_mcp_add_command(),
                 "tools": [
                     "slm_list_executors",
                     "slm_decompose_workflow",
@@ -162,7 +299,17 @@ def create_server() -> Any:
                     "slm_run_task",
                     "slm_verify_result",
                     "slm_verify_escalation",
+                    "slm_repair_json",
+                    "slm_localize_traceback",
+                    "slm_generate_search_queries",
+                    "slm_rank_search_hits",
+                    "slm_classify_failure",
+                    "slm_classify_patch_risk",
                     "slm_get_trace",
+                    "slm_export_trace",
+                    "slm_health",
+                    "slm_model_status",
+                    "slm_eval_manifest",
                     "slm_codex_probe",
                 ],
             }
@@ -171,14 +318,24 @@ def create_server() -> Any:
     return server
 
 
+def run_transport(transport: str = "stdio") -> None:
+    """Run the MCP server over stdio or streamable-http."""
+    if transport not in {"stdio", "streamable-http", "sse"}:
+        raise ValueError(f"Unsupported MCP transport: {transport}")
+    create_server().run(cast(Any, transport))
+
+
 def run_stdio() -> None:
     """Run the MCP server over stdio."""
-    create_server().run("stdio")
+    run_transport("stdio")
 
 
 def main() -> None:
     """Console entrypoint for the MCP server."""
-    run_stdio()
+    transport = os.getenv("SLM_HARNESS_MCP_TRANSPORT", "stdio")
+    if len(sys.argv) > 1:
+        transport = sys.argv[1]
+    run_transport(transport)
 
 
 def _json(payload: dict[str, Any]) -> str:
@@ -228,10 +385,39 @@ async def _run_verifier_escalation(
     }
 
 
+async def _run_subroutine_tool(goal: str, task_type: TaskType, shared: dict[str, Any]) -> dict[str, Any]:
+    subtask = Subtask(goal=goal, input=str(shared.get("raw") or shared.get("task") or shared.get("query") or goal), task_type=task_type)
+    context = TaskContext(root_goal=goal, shared=shared)
+    decision = _ENGINE.route_subtask(subtask)
+    result = await _ENGINE._execute_decision(subtask, context, decision)
+    verification = _ENGINE.verifier.verify(subtask, result)
+    return {
+        "subtask": subtask.model_dump(mode="json"),
+        "decision": decision.model_dump(mode="json"),
+        "result": result.model_dump(mode="json"),
+        "verification": verification.model_dump(mode="json"),
+    }
+
+
 def _parse_task_type(value: str | None) -> TaskType | None:
     if value is None or value == "":
         return None
-    allowed = {"route", "classify", "extract", "verify", "code", "tool", "reason", "unknown"}
+    allowed = {
+        "route",
+        "classify",
+        "extract",
+        "verify",
+        "code",
+        "tool",
+        "reason",
+        "json_repair",
+        "trace_localize",
+        "search_query",
+        "search_rank",
+        "failure_classify",
+        "patch_risk",
+        "unknown",
+    }
     if value not in allowed:
         raise ValueError(f"Unsupported task_type: {value}")
     return cast(TaskType, value)
