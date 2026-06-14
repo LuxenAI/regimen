@@ -10,18 +10,22 @@ min_confidence = 0.70
 [subroutines.json_repair]
 backend = "auto"
 model_id = "ishaanranjan/slm-agent-json-repair-smollm2-360m"
+# model_path = "models/huggingface/slm-agent-json-repair-smollm2-360m"
 
 [subroutines.trace_localize]
 backend = "auto"
 model_id = "ishaanranjan/slm-agent-trace-localizer-qwen2-5-0-5b"
+# model_path = "models/huggingface/slm-agent-trace-localizer-qwen2-5-0-5b"
 
 [subroutines.search_query]
 backend = "auto"
 model_id = "ishaanranjan/slm-agent-search-query-gen-qwen2-5-0-5b"
+# model_path = "models/huggingface/slm-agent-search-query-gen-qwen2-5-0-5b"
 
 [subroutines.search_rank]
 backend = "auto"
 model_id = "ishaanranjan/slm-agent-search-hit-ranker-qwen2-5-0-5b"
+# model_path = "models/huggingface/slm-agent-search-hit-ranker-qwen2-5-0-5b"
 
 [subroutines.failure_classify]
 backend = "deterministic"

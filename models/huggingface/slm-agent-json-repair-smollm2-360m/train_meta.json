@@ -1,0 +1,13 @@
+{
+  "base_model": "HuggingFaceTB/SmolLM2-360M-Instruct",
+  "train_path": "/root/slm-agents/slm_harness/results/subroutines/sft/json_repair/train.jsonl",
+  "n_train": 2000,
+  "epochs": 3.0,
+  "lr": 2e-05,
+  "batch_size": 32,
+  "grad_accum": 1,
+  "max_seq_len": 2048,
+  "seed": 0,
+  "train_seconds": 90.6,
+  "train_loss": 0.33912038109289905
+}

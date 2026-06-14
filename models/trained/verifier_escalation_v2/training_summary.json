@@ -1,0 +1,36 @@
+{
+  "base_model": "google/bert_uncased_L-2_H-128_A-2",
+  "device": "cuda",
+  "labels": [
+    "accept",
+    "escalate_empty_output",
+    "escalate_error",
+    "escalate_low_confidence",
+    "escalate_risky_diff",
+    "escalate_visual_failure",
+    "escalate_incomplete"
+  ],
+  "model_dir": "/home/ubuntu/slmharness-training/verifier_escalation_v2/model",
+  "parameter_count": 4386823,
+  "parameter_limit": 10000000,
+  "quantized": {
+    "model_dir": "/home/ubuntu/slmharness-training/verifier_escalation_v2/model",
+    "output_path": "/home/ubuntu/slmharness-training/verifier_escalation_v2/quantized/pytorch_model_int8_dynamic_state.pt",
+    "size_bytes": 16344999
+  },
+  "rounds": [
+    {
+      "dev_accuracy": 1.0,
+      "dev_examples": 252,
+      "round": 0,
+      "train_examples": 1148
+    },
+    {
+      "dev_accuracy": 1.0,
+      "dev_examples": 252,
+      "round": 1,
+      "train_examples": 1614
+    }
+  ],
+  "teacher_model": "frontier-teacher-compatible"
+}

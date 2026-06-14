@@ -1,0 +1,37 @@
+{
+  "source": "https://huggingface.co/collections/ishaanranjan/parameter-floors-for-developer-agent-subroutines",
+  "models": [
+    {
+      "task_type": "json_repair",
+      "repo_id": "ishaanranjan/slm-agent-json-repair-smollm2-360m",
+      "revision": "fc76a3a58a28b79f55c70a6dc253bd4794d2104f",
+      "local_dir": "slm-agent-json-repair-smollm2-360m",
+      "weight_file": "model.safetensors",
+      "weight_size_bytes": 1447302712
+    },
+    {
+      "task_type": "trace_localize",
+      "repo_id": "ishaanranjan/slm-agent-trace-localizer-qwen2-5-0-5b",
+      "revision": "3fa1d0023617e336b4e29e43e1b7882ed5254cd2",
+      "local_dir": "slm-agent-trace-localizer-qwen2-5-0-5b",
+      "weight_file": "model.safetensors",
+      "weight_size_bytes": 1976206944
+    },
+    {
+      "task_type": "search_query",
+      "repo_id": "ishaanranjan/slm-agent-search-query-gen-qwen2-5-0-5b",
+      "revision": "b09b6a4e0558acce33b0083a774ce48257571b9b",
+      "local_dir": "slm-agent-search-query-gen-qwen2-5-0-5b",
+      "weight_file": "model.safetensors",
+      "weight_size_bytes": 1976206944
+    },
+    {
+      "task_type": "search_rank",
+      "repo_id": "ishaanranjan/slm-agent-search-hit-ranker-qwen2-5-0-5b",
+      "revision": "80a2b1cb971fca51755970eef01433f591011afc",
+      "local_dir": "slm-agent-search-hit-ranker-qwen2-5-0-5b",
+      "weight_file": "model.safetensors",
+      "weight_size_bytes": 1976206944
+    }
+  ]
+}
