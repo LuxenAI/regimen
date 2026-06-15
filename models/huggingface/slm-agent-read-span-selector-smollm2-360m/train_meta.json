@@ -1,0 +1,28 @@
+{
+  "base_model": "HuggingFaceTB/SmolLM2-360M-Instruct",
+  "batch_size": 2,
+  "dev_records": 2048,
+  "device": "cuda",
+  "dtype": "bf16",
+  "epochs": 2,
+  "finished_at": 1781492876,
+  "gradient_accumulation_steps": 16,
+  "learning_rate": 2e-05,
+  "max_seq_len": 2048,
+  "parameter_count": 361821120,
+  "rounds": [
+    {
+      "dev_loss": 0.143541,
+      "epoch": 0,
+      "global_step": 3000
+    },
+    {
+      "dev_loss": 0.143487,
+      "epoch": 1,
+      "global_step": 6000
+    }
+  ],
+  "started_at": 1781470304,
+  "task_type": "read_span_select",
+  "train_records": 96000
+}
