@@ -1,0 +1,59 @@
+{
+  "base_model": "prajjwal1/bert-tiny",
+  "batch_size": 512,
+  "data_dir": "data/prompt_injection_classifier",
+  "epochs": 8,
+  "finished_at": 1781717151,
+  "global_step": 235,
+  "learning_rate": 5e-05,
+  "max_length": 384,
+  "metrics": {
+    "accuracy": 1.0,
+    "confusion_matrix": [
+      [
+        6611,
+        0,
+        0
+      ],
+      [
+        0,
+        2358,
+        0
+      ],
+      [
+        0,
+        0,
+        3031
+      ]
+    ],
+    "macro_f1": 1.0,
+    "malicious_recall": 1.0,
+    "per_class": {
+      "malicious": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "safe": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "suspicious": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    },
+    "reason_accuracy": 0.76075,
+    "safe_confidence_threshold": 0.72
+  },
+  "output_schema": {
+    "confidence": "float",
+    "label": "safe | suspicious | malicious",
+    "reason": "string",
+    "reason_code": "string"
+  },
+  "saved_at": 1781716210,
+  "started_at": 1781716082
+}

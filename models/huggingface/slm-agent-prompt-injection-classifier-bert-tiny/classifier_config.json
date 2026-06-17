@@ -1,0 +1,87 @@
+{
+  "architecture": "PromptInjectionClassifier",
+  "base_model": "prajjwal1/bert-tiny",
+  "id_to_label": {
+    "0": "safe",
+    "1": "suspicious",
+    "2": "malicious"
+  },
+  "id_to_reason": {
+    "0": "benign_content",
+    "1": "benign_security_discussion",
+    "10": "external_callback_or_tracking",
+    "11": "policy_bypass_or_jailbreak",
+    "12": "hidden_or_obfuscated_instruction",
+    "13": "impersonation_or_authority_claim",
+    "2": "benign_code_or_config",
+    "3": "quoted_or_sandboxed_attack",
+    "4": "untrusted_instruction",
+    "5": "instruction_override",
+    "6": "prompt_leak_request",
+    "7": "credential_or_secret_exfiltration",
+    "8": "tool_abuse",
+    "9": "data_destruction"
+  },
+  "label_to_id": {
+    "malicious": 2,
+    "safe": 0,
+    "suspicious": 1
+  },
+  "labels": [
+    "safe",
+    "suspicious",
+    "malicious"
+  ],
+  "max_length": 384,
+  "reason_codes": [
+    "benign_content",
+    "benign_security_discussion",
+    "benign_code_or_config",
+    "quoted_or_sandboxed_attack",
+    "untrusted_instruction",
+    "instruction_override",
+    "prompt_leak_request",
+    "credential_or_secret_exfiltration",
+    "tool_abuse",
+    "data_destruction",
+    "external_callback_or_tracking",
+    "policy_bypass_or_jailbreak",
+    "hidden_or_obfuscated_instruction",
+    "impersonation_or_authority_claim"
+  ],
+  "reason_text": {
+    "benign_code_or_config": "The text is code, configuration, logs, or documentation without agent-directed instructions.",
+    "benign_content": "The retrieved text is ordinary task-relevant content.",
+    "benign_security_discussion": "The text discusses attacks as content rather than instructing the agent.",
+    "credential_or_secret_exfiltration": "The content asks the agent to reveal, collect, or transmit secrets.",
+    "data_destruction": "The content asks for destructive file, database, account, or repository actions.",
+    "external_callback_or_tracking": "The content tries to send data to an external URL, webhook, email, or tracker.",
+    "hidden_or_obfuscated_instruction": "The content hides instructions in comments, metadata, encodings, or formatting.",
+    "impersonation_or_authority_claim": "The content falsely claims authority over the agent or developer instructions.",
+    "instruction_override": "The content tries to override system, developer, or user instructions.",
+    "policy_bypass_or_jailbreak": "The content asks the agent to bypass rules, safety checks, or sandbox constraints.",
+    "prompt_leak_request": "The content asks for hidden prompts, policies, chain-of-thought, or internal state.",
+    "quoted_or_sandboxed_attack": "The text contains injection-like wording only inside a quote, example, or test fixture.",
+    "tool_abuse": "The content tries to trigger unauthorized tool calls, shell commands, downloads, or network requests.",
+    "untrusted_instruction": "The untrusted content attempts to give the agent unrelated instructions."
+  },
+  "reason_to_id": {
+    "benign_code_or_config": 2,
+    "benign_content": 0,
+    "benign_security_discussion": 1,
+    "credential_or_secret_exfiltration": 7,
+    "data_destruction": 9,
+    "external_callback_or_tracking": 10,
+    "hidden_or_obfuscated_instruction": 12,
+    "impersonation_or_authority_claim": 13,
+    "instruction_override": 5,
+    "policy_bypass_or_jailbreak": 11,
+    "prompt_leak_request": 6,
+    "quoted_or_sandboxed_attack": 3,
+    "tool_abuse": 8,
+    "untrusted_instruction": 4
+  },
+  "safe_confidence_threshold": 0.72,
+  "task_type": "prompt_injection_classify",
+  "weight_file": "pytorch_model.bin"
+}
