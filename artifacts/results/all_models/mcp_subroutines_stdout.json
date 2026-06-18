@@ -1,0 +1,70 @@
+{
+  "raw": "/home/ubuntu/slm-harness/artifacts/results/raw/subroutine_benchmark.jsonl",
+  "summary": [
+    {
+      "estimated_cost_per_success_usd": 0.0,
+      "estimated_cost_per_task_usd": 0.0,
+      "fallback_rate": 0.5,
+      "gpu_memory_mb": 567,
+      "latency_p50_ms": 0.5026320000069973,
+      "latency_p95_ms": 4103.388155999937,
+      "mode": "deterministic_only",
+      "schema_valid_rate": 0.8333333333333334,
+      "success_rate": 0.8333333333333334,
+      "tasks": 6,
+      "verifier_pass_rate": 0.8333333333333334
+    },
+    {
+      "estimated_cost_per_success_usd": 0.0,
+      "estimated_cost_per_task_usd": 0.0,
+      "fallback_rate": 1.0,
+      "gpu_memory_mb": 567,
+      "latency_p50_ms": 0.4798900000650974,
+      "latency_p95_ms": 2.3788710000189894,
+      "mode": "slm_only",
+      "schema_valid_rate": 1.0,
+      "success_rate": 1.0,
+      "tasks": 6,
+      "verifier_pass_rate": 1.0
+    },
+    {
+      "estimated_cost_per_success_usd": 0.0,
+      "estimated_cost_per_task_usd": 0.0,
+      "fallback_rate": 0.5,
+      "gpu_memory_mb": 567,
+      "latency_p50_ms": 0.05633099999613478,
+      "latency_p95_ms": 2.4572649999754503,
+      "mode": "deterministic_slm_fallback",
+      "schema_valid_rate": 1.0,
+      "success_rate": 1.0,
+      "tasks": 6,
+      "verifier_pass_rate": 1.0
+    },
+    {
+      "estimated_cost_per_success_usd": 0.0,
+      "estimated_cost_per_task_usd": 0.0,
+      "fallback_rate": 0.5,
+      "gpu_memory_mb": 567,
+      "latency_p50_ms": 0.048711999966144504,
+      "latency_p95_ms": 2.6127459999543134,
+      "mode": "deterministic_slm_frontier_stub",
+      "schema_valid_rate": 1.0,
+      "success_rate": 1.0,
+      "tasks": 6,
+      "verifier_pass_rate": 1.0
+    },
+    {
+      "estimated_cost_per_success_usd": 0.0,
+      "estimated_cost_per_task_usd": 0.0,
+      "fallback_rate": 0.5,
+      "gpu_memory_mb": 587,
+      "latency_p50_ms": 0.5323120000184645,
+      "latency_p95_ms": 791.3479740000184,
+      "mode": "mcp_full_agent_path",
+      "schema_valid_rate": 0.8333333333333334,
+      "success_rate": 0.8333333333333334,
+      "tasks": 6,
+      "verifier_pass_rate": 0.8333333333333334
+    }
+  ]
+}

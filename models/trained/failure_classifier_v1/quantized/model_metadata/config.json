@@ -1,0 +1,51 @@
+{
+  "add_cross_attention": false,
+  "architectures": [
+    "BertForSequenceClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "bos_token_id": null,
+  "classifier_dropout": null,
+  "dtype": "float32",
+  "eos_token_id": null,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 128,
+  "id2label": {
+    "0": "dependency_issue",
+    "1": "syntax_error",
+    "2": "type_error",
+    "3": "missing_fixture",
+    "4": "flaky_test",
+    "5": "frontend_render_issue",
+    "6": "sandbox_network_issue",
+    "7": "assertion_failure",
+    "8": "unknown"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 512,
+  "is_decoder": false,
+  "label2id": {
+    "assertion_failure": 7,
+    "dependency_issue": 0,
+    "flaky_test": 4,
+    "frontend_render_issue": 5,
+    "missing_fixture": 3,
+    "sandbox_network_issue": 6,
+    "syntax_error": 1,
+    "type_error": 2,
+    "unknown": 8
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 2,
+  "num_hidden_layers": 2,
+  "pad_token_id": 0,
+  "problem_type": "single_label_classification",
+  "tie_word_embeddings": true,
+  "transformers_version": "5.12.1",
+  "type_vocab_size": 2,
+  "use_cache": true,
+  "vocab_size": 30522
+}

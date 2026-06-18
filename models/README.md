@@ -27,3 +27,16 @@ SLM_HARNESS_VERIFIER_BACKEND=transformers \
 SLM_HARNESS_VERIFIER_MODEL_DIR=models/trained/verifier_escalation_v2/model \
 slm-harness-mcp
 ```
+
+## Planned Remaining Subroutine Models
+
+`failure_classify` and `patch_risk` are still rule-backed by default, but the runtime can now load
+trained classifier artifacts when these environment variables are set:
+
+```bash
+SLM_HARNESS_FAILURE_CLASSIFIER_MODEL_DIR=models/trained/failure_classifier_v1/model
+SLM_HARNESS_PATCH_RISK_MODEL_DIR=models/trained/patch_risk_classifier_v1/model
+```
+
+See [docs/REMAINING_SUBROUTINE_TRAINING_AND_EVALS.md](../docs/REMAINING_SUBROUTINE_TRAINING_AND_EVALS.md)
+for the A100 training runbook, teacher-data schema, and eval matrix.

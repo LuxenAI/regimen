@@ -1,0 +1,1106 @@
+{
+  "eval_outputs": [
+    {
+      "path": "artifacts/results/all_models/all_model_evals.json",
+      "sha256": "93a7139e91ee4d3118229d47e9dcec86bed9c897acb2fcceeed0d74931c4434c",
+      "size_bytes": 745657
+    },
+    {
+      "path": "artifacts/results/all_models/all_model_evals.md",
+      "sha256": "7fc9366cac399baa91503be341f8fd45e02184ced7073f3e80e31e0f47b77f3e",
+      "size_bytes": 408
+    },
+    {
+      "path": "artifacts/results/all_models/mcp_subroutines_stdout.json",
+      "sha256": "10dc77b7afc4007ba92ada78a59168633da1455b85a86b2174ac04e7c6925400",
+      "size_bytes": 2156
+    },
+    {
+      "path": "artifacts/results/all_models/remaining_subroutines.json",
+      "sha256": "964730515099371ee1621b9c15502c4b49c3b34482c0dfd7fec5afe0a1448e2c",
+      "size_bytes": 305616
+    },
+    {
+      "path": "artifacts/results/all_models/verifier_escalation.json",
+      "sha256": "2e996fd9d2b3e544cc7391d5befec2469eed0f2ad7783e202d5a2dfe92617bff",
+      "size_bytes": 10368
+    },
+    {
+      "path": "artifacts/results/raw/subroutine_benchmark.jsonl",
+      "sha256": "e5ab7a23eb4256c3b7cdbdbae1e2fe9390723e91d6be60cf9d8e724ae5cb8490",
+      "size_bytes": 29305
+    },
+    {
+      "path": "artifacts/results/remaining_subroutines_benchmark.json",
+      "sha256": "cb635fba8452a305c50ff11f4e701a2a2f258e6cc2d881fe52a8f82108d40e73",
+      "size_bytes": 305638
+    },
+    {
+      "path": "artifacts/results/remaining_subroutines_training.json",
+      "sha256": "d4012ee343ab988c3eba88ffb6568d8ada2831b77bacbfce0f1a5e518a26e872",
+      "size_bytes": 6119
+    },
+    {
+      "path": "artifacts/results/summary.csv",
+      "sha256": "36a954051b767695711e97daf9d0d7101c62ce8793b25039f5540f65f22e14f8",
+      "size_bytes": 722
+    },
+    {
+      "path": "artifacts/results/summary.md",
+      "sha256": "5b517ccc0f5c4fec2cc9b102ba71dbb82417b58ba2f061439f94775e57e0ea39",
+      "size_bytes": 533
+    }
+  ],
+  "models": [
+    {
+      "family": "huggingface",
+      "metadata": {
+        "models/huggingface/slm-agent-json-repair-smollm2-360m/config.json": {
+          "_name_or_path": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "architectures": [
+            "LlamaForCausalLM"
+          ],
+          "attention_bias": false,
+          "attention_dropout": 0.0,
+          "bos_token_id": 1,
+          "eos_token_id": 2,
+          "head_dim": 64,
+          "hidden_act": "silu",
+          "hidden_size": 960,
+          "initializer_range": 0.02,
+          "intermediate_size": 2560,
+          "is_llama_config": true,
+          "max_position_embeddings": 8192,
+          "mlp_bias": false,
+          "model_type": "llama",
+          "num_attention_heads": 15,
+          "num_hidden_layers": 32,
+          "num_key_value_heads": 5,
+          "pad_token_id": 2,
+          "pretraining_tp": 1,
+          "rms_norm_eps": 1e-05,
+          "rope_interleaved": false,
+          "rope_scaling": null,
+          "rope_theta": 100000,
+          "tie_word_embeddings": true,
+          "torch_dtype": "float32",
+          "transformers.js_config": {
+            "kv_cache_dtype": {
+              "fp16": "float16",
+              "q4f16": "float16"
+            }
+          },
+          "transformers_version": "4.48.3",
+          "use_cache": true,
+          "vocab_size": 49152
+        },
+        "models/huggingface/slm-agent-json-repair-smollm2-360m/generation_config.json": {
+          "_from_model_config": true,
+          "bos_token_id": 1,
+          "eos_token_id": 2,
+          "pad_token_id": 2,
+          "transformers_version": "4.48.3"
+        },
+        "models/huggingface/slm-agent-json-repair-smollm2-360m/train_meta.json": {
+          "base_model": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "batch_size": 32,
+          "epochs": 3.0,
+          "grad_accum": 1,
+          "lr": 2e-05,
+          "max_seq_len": 2048,
+          "n_train": 2000,
+          "seed": 0,
+          "train_loss": 0.33912038109289905,
+          "train_path": "/root/slm-agents/slm_harness/results/subroutines/sft/json_repair/train.jsonl",
+          "train_seconds": 90.6
+        }
+      },
+      "name": "slm-agent-json-repair-smollm2-360m",
+      "path": "models/huggingface/slm-agent-json-repair-smollm2-360m",
+      "weights": [
+        {
+          "lfs_oid_sha256": "1b946faf5bcce85af5558561e67404e3e54f0f9bdb00a3cfc87bd71738ce251a",
+          "lfs_size_bytes": 1447317080,
+          "path": "models/huggingface/slm-agent-json-repair-smollm2-360m/model.safetensors",
+          "sha256": "1b946faf5bcce85af5558561e67404e3e54f0f9bdb00a3cfc87bd71738ce251a",
+          "size_bytes_on_disk": 135,
+          "storage": "git_lfs_pointer"
+        },
+        {
+          "lfs_oid_sha256": "f43e0d74440069905d8fbb1c66d9ddd49a24cbe7d4d13daab9c69a240e73aa4c",
+          "lfs_size_bytes": 5752,
+          "path": "models/huggingface/slm-agent-json-repair-smollm2-360m/training_args.bin",
+          "sha256": "f43e0d74440069905d8fbb1c66d9ddd49a24cbe7d4d13daab9c69a240e73aa4c",
+          "size_bytes_on_disk": 129,
+          "storage": "git_lfs_pointer"
+        }
+      ]
+    },
+    {
+      "family": "huggingface",
+      "metadata": {
+        "models/huggingface/slm-agent-read-span-selector-smollm2-360m/config.json": {
+          "architectures": [
+            "LlamaForCausalLM"
+          ],
+          "attention_bias": false,
+          "attention_dropout": 0.0,
+          "bos_token_id": 1,
+          "dtype": "bfloat16",
+          "eos_token_id": 2,
+          "head_dim": 64,
+          "hidden_act": "silu",
+          "hidden_size": 960,
+          "initializer_range": 0.02,
+          "intermediate_size": 2560,
+          "is_llama_config": true,
+          "max_position_embeddings": 8192,
+          "mlp_bias": false,
+          "model_type": "llama",
+          "num_attention_heads": 15,
+          "num_hidden_layers": 32,
+          "num_key_value_heads": 5,
+          "pad_token_id": 2,
+          "pretraining_tp": 1,
+          "rms_norm_eps": 1e-05,
+          "rope_interleaved": false,
+          "rope_parameters": {
+            "rope_theta": 100000,
+            "rope_type": "default"
+          },
+          "tie_word_embeddings": true,
+          "transformers.js_config": {
+            "kv_cache_dtype": {
+              "fp16": "float16",
+              "q4f16": "float16"
+            }
+          },
+          "transformers_version": "5.12.0",
+          "use_cache": false,
+          "vocab_size": 49152
+        },
+        "models/huggingface/slm-agent-read-span-selector-smollm2-360m/generation_config.json": {
+          "_from_model_config": true,
+          "bos_token_id": 1,
+          "eos_token_id": 2,
+          "pad_token_id": 2,
+          "transformers_version": "5.12.0"
+        },
+        "models/huggingface/slm-agent-read-span-selector-smollm2-360m/train_meta.json": {
+          "base_model": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "batch_size": 2,
+          "dev_records": 2048,
+          "device": "cuda",
+          "dtype": "bf16",
+          "epochs": 2,
+          "finished_at": 1781492876,
+          "gradient_accumulation_steps": 16,
+          "learning_rate": 2e-05,
+          "max_seq_len": 2048,
+          "parameter_count": 361821120,
+          "rounds": [
+            {
+              "dev_loss": 0.143541,
+              "epoch": 0,
+              "global_step": 3000
+            },
+            {
+              "dev_loss": 0.143487,
+              "epoch": 1,
+              "global_step": 6000
+            }
+          ],
+          "started_at": 1781470304,
+          "task_type": "read_span_select",
+          "train_records": 96000
+        }
+      },
+      "name": "slm-agent-read-span-selector-smollm2-360m",
+      "path": "models/huggingface/slm-agent-read-span-selector-smollm2-360m",
+      "weights": [
+        {
+          "lfs_oid_sha256": "f2676e56c6e7410e2d26a5170f6ac13e024cfe8499373f8ee431045a1cb1903f",
+          "lfs_size_bytes": 723674912,
+          "path": "models/huggingface/slm-agent-read-span-selector-smollm2-360m/model.safetensors",
+          "sha256": "f2676e56c6e7410e2d26a5170f6ac13e024cfe8499373f8ee431045a1cb1903f",
+          "size_bytes_on_disk": 134,
+          "storage": "git_lfs_pointer"
+        }
+      ]
+    },
+    {
+      "family": "huggingface",
+      "metadata": {
+        "models/huggingface/slm-agent-search-hit-ranker-qwen2-5-0-5b/config.json": {
+          "_name_or_path": "Qwen/Qwen2.5-0.5B-Instruct",
+          "architectures": [
+            "Qwen2ForCausalLM"
+          ],
+          "attention_dropout": 0.0,
+          "bos_token_id": 151643,
+          "eos_token_id": 151645,
+          "hidden_act": "silu",
+          "hidden_size": 896,
+          "initializer_range": 0.02,
+          "intermediate_size": 4864,
+          "max_position_embeddings": 32768,
+          "max_window_layers": 21,
+          "model_type": "qwen2",
+          "num_attention_heads": 14,
+          "num_hidden_layers": 24,
+          "num_key_value_heads": 2,
+          "rms_norm_eps": 1e-06,
+          "rope_scaling": null,
+          "rope_theta": 1000000.0,
+          "sliding_window": null,
+          "tie_word_embeddings": true,
+          "torch_dtype": "float32",
+          "transformers_version": "4.48.3",
+          "use_cache": true,
+          "use_sliding_window": false,
+          "vocab_size": 151936
+        },
+        "models/huggingface/slm-agent-search-hit-ranker-qwen2-5-0-5b/generation_config.json": {
+          "bos_token_id": 151643,
+          "do_sample": true,
+          "eos_token_id": [
+            151645,
+            151643
+          ],
+          "pad_token_id": 151643,
+          "repetition_penalty": 1.1,
+          "temperature": 0.7,
+          "top_k": 20,
+          "top_p": 0.8,
+          "transformers_version": "4.48.3"
+        },
+        "models/huggingface/slm-agent-search-hit-ranker-qwen2-5-0-5b/train_meta.json": {
+          "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "batch_size": 16,
+          "epochs": 3.0,
+          "grad_accum": 2,
+          "lr": 2e-05,
+          "max_seq_len": 2048,
+          "n_train": 1576,
+          "seed": 0,
+          "train_loss": 0.5334864311477765,
+          "train_path": "/root/slm-agents/slm_harness/results/subroutines/sft/search_hit_ranker/train.jsonl",
+          "train_seconds": 95.8
+        }
+      },
+      "name": "slm-agent-search-hit-ranker-qwen2-5-0-5b",
+      "path": "models/huggingface/slm-agent-search-hit-ranker-qwen2-5-0-5b",
+      "weights": [
+        {
+          "lfs_oid_sha256": "5dd37ed3946d7bec26799af0707bb8060642fbf109bb0bdd5abad415d64429d7",
+          "lfs_size_bytes": 1976163472,
+          "path": "models/huggingface/slm-agent-search-hit-ranker-qwen2-5-0-5b/model.safetensors",
+          "sha256": "5dd37ed3946d7bec26799af0707bb8060642fbf109bb0bdd5abad415d64429d7",
+          "size_bytes_on_disk": 135,
+          "storage": "git_lfs_pointer"
+        },
+        {
+          "lfs_oid_sha256": "ea7ca1043696647e5fa48fa89d8d570a4f362ed7840f8e590ad257f63fb5acab",
+          "lfs_size_bytes": 5752,
+          "path": "models/huggingface/slm-agent-search-hit-ranker-qwen2-5-0-5b/training_args.bin",
+          "sha256": "ea7ca1043696647e5fa48fa89d8d570a4f362ed7840f8e590ad257f63fb5acab",
+          "size_bytes_on_disk": 129,
+          "storage": "git_lfs_pointer"
+        }
+      ]
+    },
+    {
+      "family": "huggingface",
+      "metadata": {
+        "models/huggingface/slm-agent-search-query-gen-qwen2-5-0-5b/config.json": {
+          "_name_or_path": "Qwen/Qwen2.5-0.5B-Instruct",
+          "architectures": [
+            "Qwen2ForCausalLM"
+          ],
+          "attention_dropout": 0.0,
+          "bos_token_id": 151643,
+          "eos_token_id": 151645,
+          "hidden_act": "silu",
+          "hidden_size": 896,
+          "initializer_range": 0.02,
+          "intermediate_size": 4864,
+          "max_position_embeddings": 32768,
+          "max_window_layers": 21,
+          "model_type": "qwen2",
+          "num_attention_heads": 14,
+          "num_hidden_layers": 24,
+          "num_key_value_heads": 2,
+          "rms_norm_eps": 1e-06,
+          "rope_scaling": null,
+          "rope_theta": 1000000.0,
+          "sliding_window": null,
+          "tie_word_embeddings": true,
+          "torch_dtype": "float32",
+          "transformers_version": "4.48.3",
+          "use_cache": true,
+          "use_sliding_window": false,
+          "vocab_size": 151936
+        },
+        "models/huggingface/slm-agent-search-query-gen-qwen2-5-0-5b/generation_config.json": {
+          "bos_token_id": 151643,
+          "do_sample": true,
+          "eos_token_id": [
+            151645,
+            151643
+          ],
+          "pad_token_id": 151643,
+          "repetition_penalty": 1.1,
+          "temperature": 0.7,
+          "top_k": 20,
+          "top_p": 0.8,
+          "transformers_version": "4.48.3"
+        },
+        "models/huggingface/slm-agent-search-query-gen-qwen2-5-0-5b/train_meta.json": {
+          "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "batch_size": 16,
+          "epochs": 3.0,
+          "grad_accum": 2,
+          "lr": 2e-05,
+          "max_seq_len": 2048,
+          "n_train": 2000,
+          "seed": 0,
+          "train_loss": 0.15850000612197385,
+          "train_path": "/root/slm-agents/slm_harness/results/subroutines/sft/search_query_gen/train.jsonl",
+          "train_seconds": 51.2
+        }
+      },
+      "name": "slm-agent-search-query-gen-qwen2-5-0-5b",
+      "path": "models/huggingface/slm-agent-search-query-gen-qwen2-5-0-5b",
+      "weights": [
+        {
+          "lfs_oid_sha256": "4752417947ee5388bd07269e3723a4300e223066303bf0f86f551b0e4295f2bb",
+          "lfs_size_bytes": 1976163472,
+          "path": "models/huggingface/slm-agent-search-query-gen-qwen2-5-0-5b/model.safetensors",
+          "sha256": "4752417947ee5388bd07269e3723a4300e223066303bf0f86f551b0e4295f2bb",
+          "size_bytes_on_disk": 135,
+          "storage": "git_lfs_pointer"
+        },
+        {
+          "lfs_oid_sha256": "5e8293f66cc608428b192c94ac43c9924db26ac4c6dfc2f2088b95e8d2aca092",
+          "lfs_size_bytes": 5752,
+          "path": "models/huggingface/slm-agent-search-query-gen-qwen2-5-0-5b/training_args.bin",
+          "sha256": "5e8293f66cc608428b192c94ac43c9924db26ac4c6dfc2f2088b95e8d2aca092",
+          "size_bytes_on_disk": 129,
+          "storage": "git_lfs_pointer"
+        }
+      ]
+    },
+    {
+      "family": "huggingface",
+      "metadata": {
+        "models/huggingface/slm-agent-trace-localizer-qwen2-5-0-5b/config.json": {
+          "_name_or_path": "Qwen/Qwen2.5-0.5B-Instruct",
+          "architectures": [
+            "Qwen2ForCausalLM"
+          ],
+          "attention_dropout": 0.0,
+          "bos_token_id": 151643,
+          "eos_token_id": 151645,
+          "hidden_act": "silu",
+          "hidden_size": 896,
+          "initializer_range": 0.02,
+          "intermediate_size": 4864,
+          "max_position_embeddings": 32768,
+          "max_window_layers": 21,
+          "model_type": "qwen2",
+          "num_attention_heads": 14,
+          "num_hidden_layers": 24,
+          "num_key_value_heads": 2,
+          "rms_norm_eps": 1e-06,
+          "rope_scaling": null,
+          "rope_theta": 1000000.0,
+          "sliding_window": null,
+          "tie_word_embeddings": true,
+          "torch_dtype": "float32",
+          "transformers_version": "4.48.3",
+          "use_cache": true,
+          "use_sliding_window": false,
+          "vocab_size": 151936
+        },
+        "models/huggingface/slm-agent-trace-localizer-qwen2-5-0-5b/generation_config.json": {
+          "bos_token_id": 151643,
+          "do_sample": true,
+          "eos_token_id": [
+            151645,
+            151643
+          ],
+          "pad_token_id": 151643,
+          "repetition_penalty": 1.1,
+          "temperature": 0.7,
+          "top_k": 20,
+          "top_p": 0.8,
+          "transformers_version": "4.48.3"
+        },
+        "models/huggingface/slm-agent-trace-localizer-qwen2-5-0-5b/train_meta.json": {
+          "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "batch_size": 16,
+          "epochs": 3.0,
+          "grad_accum": 2,
+          "lr": 2e-05,
+          "max_seq_len": 2048,
+          "n_train": 2000,
+          "seed": 0,
+          "train_loss": 0.3698787951982149,
+          "train_path": "/root/slm-agents/slm_harness/results/subroutines/sft/trace_localizer/train.jsonl",
+          "train_seconds": 132.6
+        }
+      },
+      "name": "slm-agent-trace-localizer-qwen2-5-0-5b",
+      "path": "models/huggingface/slm-agent-trace-localizer-qwen2-5-0-5b",
+      "weights": [
+        {
+          "lfs_oid_sha256": "9940201e8eaab7e3e40843fed639fb5f5c5154a66874e196f3f83ebf906c1cd2",
+          "lfs_size_bytes": 1976163472,
+          "path": "models/huggingface/slm-agent-trace-localizer-qwen2-5-0-5b/model.safetensors",
+          "sha256": "9940201e8eaab7e3e40843fed639fb5f5c5154a66874e196f3f83ebf906c1cd2",
+          "size_bytes_on_disk": 135,
+          "storage": "git_lfs_pointer"
+        },
+        {
+          "lfs_oid_sha256": "87ace72c4b261a76607795a1c7c03fae5d42ce225ce86c3b2f87fdbe1593bcf0",
+          "lfs_size_bytes": 5752,
+          "path": "models/huggingface/slm-agent-trace-localizer-qwen2-5-0-5b/training_args.bin",
+          "sha256": "87ace72c4b261a76607795a1c7c03fae5d42ce225ce86c3b2f87fdbe1593bcf0",
+          "size_bytes_on_disk": 129,
+          "storage": "git_lfs_pointer"
+        }
+      ]
+    },
+    {
+      "family": "trained",
+      "metadata": {
+        "models/trained/failure_classifier_v1/model/config.json": {
+          "add_cross_attention": false,
+          "architectures": [
+            "BertForSequenceClassification"
+          ],
+          "attention_probs_dropout_prob": 0.1,
+          "bos_token_id": null,
+          "classifier_dropout": null,
+          "dtype": "float32",
+          "eos_token_id": null,
+          "hidden_act": "gelu",
+          "hidden_dropout_prob": 0.1,
+          "hidden_size": 128,
+          "id2label": {
+            "0": "dependency_issue",
+            "1": "syntax_error",
+            "2": "type_error",
+            "3": "missing_fixture",
+            "4": "flaky_test",
+            "5": "frontend_render_issue",
+            "6": "sandbox_network_issue",
+            "7": "assertion_failure",
+            "8": "unknown"
+          },
+          "initializer_range": 0.02,
+          "intermediate_size": 512,
+          "is_decoder": false,
+          "label2id": {
+            "assertion_failure": 7,
+            "dependency_issue": 0,
+            "flaky_test": 4,
+            "frontend_render_issue": 5,
+            "missing_fixture": 3,
+            "sandbox_network_issue": 6,
+            "syntax_error": 1,
+            "type_error": 2,
+            "unknown": 8
+          },
+          "layer_norm_eps": 1e-12,
+          "max_position_embeddings": 512,
+          "model_type": "bert",
+          "num_attention_heads": 2,
+          "num_hidden_layers": 2,
+          "pad_token_id": 0,
+          "problem_type": "single_label_classification",
+          "tie_word_embeddings": true,
+          "transformers_version": "5.12.1",
+          "type_vocab_size": 2,
+          "use_cache": true,
+          "vocab_size": 30522
+        },
+        "models/trained/failure_classifier_v1/quantized/model_metadata/config.json": {
+          "add_cross_attention": false,
+          "architectures": [
+            "BertForSequenceClassification"
+          ],
+          "attention_probs_dropout_prob": 0.1,
+          "bos_token_id": null,
+          "classifier_dropout": null,
+          "dtype": "float32",
+          "eos_token_id": null,
+          "hidden_act": "gelu",
+          "hidden_dropout_prob": 0.1,
+          "hidden_size": 128,
+          "id2label": {
+            "0": "dependency_issue",
+            "1": "syntax_error",
+            "2": "type_error",
+            "3": "missing_fixture",
+            "4": "flaky_test",
+            "5": "frontend_render_issue",
+            "6": "sandbox_network_issue",
+            "7": "assertion_failure",
+            "8": "unknown"
+          },
+          "initializer_range": 0.02,
+          "intermediate_size": 512,
+          "is_decoder": false,
+          "label2id": {
+            "assertion_failure": 7,
+            "dependency_issue": 0,
+            "flaky_test": 4,
+            "frontend_render_issue": 5,
+            "missing_fixture": 3,
+            "sandbox_network_issue": 6,
+            "syntax_error": 1,
+            "type_error": 2,
+            "unknown": 8
+          },
+          "layer_norm_eps": 1e-12,
+          "max_position_embeddings": 512,
+          "model_type": "bert",
+          "num_attention_heads": 2,
+          "num_hidden_layers": 2,
+          "pad_token_id": 0,
+          "problem_type": "single_label_classification",
+          "tie_word_embeddings": true,
+          "transformers_version": "5.12.1",
+          "type_vocab_size": 2,
+          "use_cache": true,
+          "vocab_size": 30522
+        },
+        "models/trained/failure_classifier_v1/training_summary.json": {
+          "base_model": "google/bert_uncased_L-2_H-128_A-2",
+          "batch_size": 64,
+          "dev_examples": 324,
+          "device": "cuda",
+          "effective_batch_size": 64,
+          "elapsed_seconds": 10.404,
+          "epochs": 6,
+          "gradient_accumulation_steps": 1,
+          "labels": [
+            "dependency_issue",
+            "syntax_error",
+            "type_error",
+            "missing_fixture",
+            "flaky_test",
+            "frontend_render_issue",
+            "sandbox_network_issue",
+            "assertion_failure",
+            "unknown"
+          ],
+          "max_length": 384,
+          "metrics": {
+            "accuracy": 1.0,
+            "confusion": {
+              "assertion_failure->assertion_failure": 36,
+              "dependency_issue->dependency_issue": 36,
+              "flaky_test->flaky_test": 36,
+              "frontend_render_issue->frontend_render_issue": 36,
+              "missing_fixture->missing_fixture": 36,
+              "sandbox_network_issue->sandbox_network_issue": 36,
+              "syntax_error->syntax_error": 36,
+              "type_error->type_error": 36,
+              "unknown->unknown": 36
+            },
+            "correct": 324,
+            "macro_f1": 1.0,
+            "per_label": {
+              "assertion_failure": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              },
+              "dependency_issue": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              },
+              "flaky_test": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              },
+              "frontend_render_issue": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              },
+              "missing_fixture": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              },
+              "sandbox_network_issue": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              },
+              "syntax_error": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              },
+              "type_error": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              },
+              "unknown": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 36
+              }
+            },
+            "total": 324
+          },
+          "model_dir": "models/trained/failure_classifier_v1/model",
+          "parameter_count": 4387081,
+          "parameter_limit": 200000000,
+          "quantized": {
+            "model_dir": "models/trained/failure_classifier_v1/model",
+            "output_path": "models/trained/failure_classifier_v1/quantized/pytorch_model_int8_dynamic_state.pt",
+            "size_bytes": 16345255
+          },
+          "rounds": [
+            {
+              "dev_accuracy": 0.3271604938271605,
+              "dev_macro_f1": 0.21813362658433083,
+              "epoch": 0,
+              "train_loss": 2.1778793334960938
+            },
+            {
+              "dev_accuracy": 0.5216049382716049,
+              "dev_macro_f1": 0.41948115580733236,
+              "epoch": 1,
+              "train_loss": 2.107905069986979
+            },
+            {
+              "dev_accuracy": 0.6666666666666666,
+              "dev_macro_f1": 0.5555555555555556,
+              "epoch": 2,
+              "train_loss": 2.029587427775065
+            },
+            {
+              "dev_accuracy": 0.9598765432098766,
+              "dev_macro_f1": 0.9592533552263993,
+              "epoch": 3,
+              "train_loss": 1.9283383687337239
+            },
+            {
+              "dev_accuracy": 1.0,
+              "dev_macro_f1": 1.0,
+              "epoch": 4,
+              "train_loss": 1.8380508422851562
+            },
+            {
+              "dev_accuracy": 1.0,
+              "dev_macro_f1": 1.0,
+              "epoch": 5,
+              "train_loss": 1.7411422729492188
+            }
+          ],
+          "runtime_env_var": "SLM_HARNESS_FAILURE_CLASSIFIER_MODEL_DIR",
+          "task_type": "failure_classify",
+          "train_examples": 1476
+        }
+      },
+      "name": "failure_classifier_v1",
+      "path": "models/trained/failure_classifier_v1",
+      "weights": [
+        {
+          "path": "models/trained/failure_classifier_v1/model/model.safetensors",
+          "sha256": "7cda836bfc63ddd6e3aa6c5974e010c1a22003fbbe87c1f533cf635003f78d43",
+          "size_bytes_on_disk": 17552924,
+          "storage": "file"
+        },
+        {
+          "path": "models/trained/failure_classifier_v1/quantized/model_metadata/model.safetensors",
+          "sha256": "7cda836bfc63ddd6e3aa6c5974e010c1a22003fbbe87c1f533cf635003f78d43",
+          "size_bytes_on_disk": 17552924,
+          "storage": "file"
+        },
+        {
+          "path": "models/trained/failure_classifier_v1/quantized/pytorch_model_int8_dynamic_state.pt",
+          "sha256": "e11de299341708146f1c8ac9d3eeaa03154faf4cc132622c3da3e8b42467a8fc",
+          "size_bytes_on_disk": 16345255,
+          "storage": "file"
+        }
+      ]
+    },
+    {
+      "family": "trained",
+      "metadata": {
+        "models/trained/patch_risk_classifier_v1/model/config.json": {
+          "add_cross_attention": false,
+          "architectures": [
+            "BertForSequenceClassification"
+          ],
+          "attention_probs_dropout_prob": 0.1,
+          "bos_token_id": null,
+          "classifier_dropout": null,
+          "dtype": "float32",
+          "eos_token_id": null,
+          "hidden_act": "gelu",
+          "hidden_dropout_prob": 0.1,
+          "hidden_size": 128,
+          "id2label": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          },
+          "initializer_range": 0.02,
+          "intermediate_size": 512,
+          "is_decoder": false,
+          "label2id": {
+            "high": 2,
+            "low": 0,
+            "medium": 1
+          },
+          "layer_norm_eps": 1e-12,
+          "max_position_embeddings": 512,
+          "model_type": "bert",
+          "num_attention_heads": 2,
+          "num_hidden_layers": 2,
+          "pad_token_id": 0,
+          "problem_type": "single_label_classification",
+          "tie_word_embeddings": true,
+          "transformers_version": "5.12.1",
+          "type_vocab_size": 2,
+          "use_cache": true,
+          "vocab_size": 30522
+        },
+        "models/trained/patch_risk_classifier_v1/quantized/model_metadata/config.json": {
+          "add_cross_attention": false,
+          "architectures": [
+            "BertForSequenceClassification"
+          ],
+          "attention_probs_dropout_prob": 0.1,
+          "bos_token_id": null,
+          "classifier_dropout": null,
+          "dtype": "float32",
+          "eos_token_id": null,
+          "hidden_act": "gelu",
+          "hidden_dropout_prob": 0.1,
+          "hidden_size": 128,
+          "id2label": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          },
+          "initializer_range": 0.02,
+          "intermediate_size": 512,
+          "is_decoder": false,
+          "label2id": {
+            "high": 2,
+            "low": 0,
+            "medium": 1
+          },
+          "layer_norm_eps": 1e-12,
+          "max_position_embeddings": 512,
+          "model_type": "bert",
+          "num_attention_heads": 2,
+          "num_hidden_layers": 2,
+          "pad_token_id": 0,
+          "problem_type": "single_label_classification",
+          "tie_word_embeddings": true,
+          "transformers_version": "5.12.1",
+          "type_vocab_size": 2,
+          "use_cache": true,
+          "vocab_size": 30522
+        },
+        "models/trained/patch_risk_classifier_v1/training_summary.json": {
+          "base_model": "google/bert_uncased_L-2_H-128_A-2",
+          "batch_size": 64,
+          "dev_examples": 324,
+          "device": "cuda",
+          "effective_batch_size": 64,
+          "elapsed_seconds": 13.276,
+          "epochs": 6,
+          "gradient_accumulation_steps": 1,
+          "labels": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "max_length": 512,
+          "metrics": {
+            "accuracy": 1.0,
+            "confusion": {
+              "high->high": 108,
+              "low->low": 108,
+              "medium->medium": 108
+            },
+            "correct": 324,
+            "macro_f1": 1.0,
+            "per_label": {
+              "high": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 108
+              },
+              "low": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 108
+              },
+              "medium": {
+                "f1": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "support": 108
+              }
+            },
+            "total": 324
+          },
+          "model_dir": "models/trained/patch_risk_classifier_v1/model",
+          "parameter_count": 4386307,
+          "parameter_limit": 200000000,
+          "quantized": {
+            "model_dir": "models/trained/patch_risk_classifier_v1/model",
+            "output_path": "models/trained/patch_risk_classifier_v1/quantized/pytorch_model_int8_dynamic_state.pt",
+            "size_bytes": 16344487
+          },
+          "rounds": [
+            {
+              "dev_accuracy": 1.0,
+              "dev_macro_f1": 1.0,
+              "epoch": 0,
+              "train_loss": 0.9941981633504232
+            },
+            {
+              "dev_accuracy": 1.0,
+              "dev_macro_f1": 1.0,
+              "epoch": 1,
+              "train_loss": 0.8144086201985677
+            },
+            {
+              "dev_accuracy": 1.0,
+              "dev_macro_f1": 1.0,
+              "epoch": 2,
+              "train_loss": 0.6907602945963541
+            },
+            {
+              "dev_accuracy": 1.0,
+              "dev_macro_f1": 1.0,
+              "epoch": 3,
+              "train_loss": 0.5967276891072592
+            },
+            {
+              "dev_accuracy": 1.0,
+              "dev_macro_f1": 1.0,
+              "epoch": 4,
+              "train_loss": 0.5146174430847168
+            },
+            {
+              "dev_accuracy": 1.0,
+              "dev_macro_f1": 1.0,
+              "epoch": 5,
+              "train_loss": 0.44234561920166016
+            }
+          ],
+          "runtime_env_var": "SLM_HARNESS_PATCH_RISK_MODEL_DIR",
+          "task_type": "patch_risk",
+          "train_examples": 1476
+        }
+      },
+      "name": "patch_risk_classifier_v1",
+      "path": "models/trained/patch_risk_classifier_v1",
+      "weights": [
+        {
+          "path": "models/trained/patch_risk_classifier_v1/model/model.safetensors",
+          "sha256": "b1ab74709ac61e5071232a3ff392ada5254fa6bc27c70685adec2d06ddaa4c7f",
+          "size_bytes_on_disk": 17549828,
+          "storage": "file"
+        },
+        {
+          "path": "models/trained/patch_risk_classifier_v1/quantized/model_metadata/model.safetensors",
+          "sha256": "b1ab74709ac61e5071232a3ff392ada5254fa6bc27c70685adec2d06ddaa4c7f",
+          "size_bytes_on_disk": 17549828,
+          "storage": "file"
+        },
+        {
+          "path": "models/trained/patch_risk_classifier_v1/quantized/pytorch_model_int8_dynamic_state.pt",
+          "sha256": "6777dede05832b38a320579e6673d71b8b93ddb3a8bb4ce25f89756b2c68d418",
+          "size_bytes_on_disk": 16344487,
+          "storage": "file"
+        }
+      ]
+    },
+    {
+      "family": "trained",
+      "metadata": {
+        "models/trained/verifier_escalation_v2/model/config.json": {
+          "_name_or_path": "google/bert_uncased_L-2_H-128_A-2",
+          "architectures": [
+            "BertForSequenceClassification"
+          ],
+          "attention_probs_dropout_prob": 0.1,
+          "classifier_dropout": null,
+          "hidden_act": "gelu",
+          "hidden_dropout_prob": 0.1,
+          "hidden_size": 128,
+          "id2label": {
+            "0": "accept",
+            "1": "escalate_empty_output",
+            "2": "escalate_error",
+            "3": "escalate_low_confidence",
+            "4": "escalate_risky_diff",
+            "5": "escalate_visual_failure",
+            "6": "escalate_incomplete"
+          },
+          "initializer_range": 0.02,
+          "intermediate_size": 512,
+          "label2id": {
+            "accept": 0,
+            "escalate_empty_output": 1,
+            "escalate_error": 2,
+            "escalate_incomplete": 6,
+            "escalate_low_confidence": 3,
+            "escalate_risky_diff": 4,
+            "escalate_visual_failure": 5
+          },
+          "layer_norm_eps": 1e-12,
+          "max_position_embeddings": 512,
+          "model_type": "bert",
+          "num_attention_heads": 2,
+          "num_hidden_layers": 2,
+          "pad_token_id": 0,
+          "position_embedding_type": "absolute",
+          "problem_type": "single_label_classification",
+          "torch_dtype": "float32",
+          "transformers_version": "4.44.2",
+          "type_vocab_size": 2,
+          "use_cache": true,
+          "vocab_size": 30522
+        },
+        "models/trained/verifier_escalation_v2/quantized/model_metadata/config.json": {
+          "_name_or_path": "google/bert_uncased_L-2_H-128_A-2",
+          "architectures": [
+            "BertForSequenceClassification"
+          ],
+          "attention_probs_dropout_prob": 0.1,
+          "classifier_dropout": null,
+          "hidden_act": "gelu",
+          "hidden_dropout_prob": 0.1,
+          "hidden_size": 128,
+          "id2label": {
+            "0": "accept",
+            "1": "escalate_empty_output",
+            "2": "escalate_error",
+            "3": "escalate_low_confidence",
+            "4": "escalate_risky_diff",
+            "5": "escalate_visual_failure",
+            "6": "escalate_incomplete"
+          },
+          "initializer_range": 0.02,
+          "intermediate_size": 512,
+          "label2id": {
+            "accept": 0,
+            "escalate_empty_output": 1,
+            "escalate_error": 2,
+            "escalate_incomplete": 6,
+            "escalate_low_confidence": 3,
+            "escalate_risky_diff": 4,
+            "escalate_visual_failure": 5
+          },
+          "layer_norm_eps": 1e-12,
+          "max_position_embeddings": 512,
+          "model_type": "bert",
+          "num_attention_heads": 2,
+          "num_hidden_layers": 2,
+          "pad_token_id": 0,
+          "position_embedding_type": "absolute",
+          "problem_type": "single_label_classification",
+          "torch_dtype": "float32",
+          "transformers_version": "4.44.2",
+          "type_vocab_size": 2,
+          "use_cache": true,
+          "vocab_size": 30522
+        },
+        "models/trained/verifier_escalation_v2/training_summary.json": {
+          "base_model": "google/bert_uncased_L-2_H-128_A-2",
+          "device": "cuda",
+          "labels": [
+            "accept",
+            "escalate_empty_output",
+            "escalate_error",
+            "escalate_low_confidence",
+            "escalate_risky_diff",
+            "escalate_visual_failure",
+            "escalate_incomplete"
+          ],
+          "model_dir": "/home/ubuntu/slmharness-training/verifier_escalation_v2/model",
+          "parameter_count": 4386823,
+          "parameter_limit": 10000000,
+          "quantized": {
+            "model_dir": "/home/ubuntu/slmharness-training/verifier_escalation_v2/model",
+            "output_path": "/home/ubuntu/slmharness-training/verifier_escalation_v2/quantized/pytorch_model_int8_dynamic_state.pt",
+            "size_bytes": 16344999
+          },
+          "rounds": [
+            {
+              "dev_accuracy": 1.0,
+              "dev_examples": 252,
+              "round": 0,
+              "train_examples": 1148
+            },
+            {
+              "dev_accuracy": 1.0,
+              "dev_examples": 252,
+              "round": 1,
+              "train_examples": 1614
+            }
+          ],
+          "teacher_model": "frontier-teacher-compatible"
+        }
+      },
+      "name": "verifier_escalation_v2",
+      "path": "models/trained/verifier_escalation_v2",
+      "weights": [
+        {
+          "lfs_oid_sha256": "76d6cd2e1367f67576dda69df26975f980864052ec06ce90c786715840a4d5f8",
+          "lfs_size_bytes": 17551892,
+          "path": "models/trained/verifier_escalation_v2/model/model.safetensors",
+          "sha256": "76d6cd2e1367f67576dda69df26975f980864052ec06ce90c786715840a4d5f8",
+          "size_bytes_on_disk": 133,
+          "storage": "git_lfs_pointer"
+        },
+        {
+          "lfs_oid_sha256": "76d6cd2e1367f67576dda69df26975f980864052ec06ce90c786715840a4d5f8",
+          "lfs_size_bytes": 17551892,
+          "path": "models/trained/verifier_escalation_v2/quantized/model_metadata/model.safetensors",
+          "sha256": "76d6cd2e1367f67576dda69df26975f980864052ec06ce90c786715840a4d5f8",
+          "size_bytes_on_disk": 133,
+          "storage": "git_lfs_pointer"
+        },
+        {
+          "lfs_oid_sha256": "98d5d7714f4ba1bb1495a81a514bc641fbaa59afff9ffb28ed1d151f8c2b25c1",
+          "lfs_size_bytes": 16344999,
+          "path": "models/trained/verifier_escalation_v2/quantized/pytorch_model_int8_dynamic_state.pt",
+          "sha256": "98d5d7714f4ba1bb1495a81a514bc641fbaa59afff9ffb28ed1d151f8c2b25c1",
+          "size_bytes_on_disk": 133,
+          "storage": "git_lfs_pointer"
+        }
+      ]
+    }
+  ]
+}

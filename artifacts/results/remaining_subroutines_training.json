@@ -1,0 +1,242 @@
+{
+  "failure_classify": {
+    "base_model": "google/bert_uncased_L-2_H-128_A-2",
+    "batch_size": 64,
+    "dev_examples": 324,
+    "device": "cuda",
+    "effective_batch_size": 64,
+    "elapsed_seconds": 10.404,
+    "epochs": 6,
+    "gradient_accumulation_steps": 1,
+    "labels": [
+      "dependency_issue",
+      "syntax_error",
+      "type_error",
+      "missing_fixture",
+      "flaky_test",
+      "frontend_render_issue",
+      "sandbox_network_issue",
+      "assertion_failure",
+      "unknown"
+    ],
+    "max_length": 384,
+    "metrics": {
+      "accuracy": 1.0,
+      "confusion": {
+        "assertion_failure->assertion_failure": 36,
+        "dependency_issue->dependency_issue": 36,
+        "flaky_test->flaky_test": 36,
+        "frontend_render_issue->frontend_render_issue": 36,
+        "missing_fixture->missing_fixture": 36,
+        "sandbox_network_issue->sandbox_network_issue": 36,
+        "syntax_error->syntax_error": 36,
+        "type_error->type_error": 36,
+        "unknown->unknown": 36
+      },
+      "correct": 324,
+      "macro_f1": 1.0,
+      "per_label": {
+        "assertion_failure": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        },
+        "dependency_issue": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        },
+        "flaky_test": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        },
+        "frontend_render_issue": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        },
+        "missing_fixture": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        },
+        "sandbox_network_issue": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        },
+        "syntax_error": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        },
+        "type_error": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        },
+        "unknown": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 36
+        }
+      },
+      "total": 324
+    },
+    "model_dir": "models/trained/failure_classifier_v1/model",
+    "parameter_count": 4387081,
+    "parameter_limit": 200000000,
+    "quantized": {
+      "model_dir": "models/trained/failure_classifier_v1/model",
+      "output_path": "models/trained/failure_classifier_v1/quantized/pytorch_model_int8_dynamic_state.pt",
+      "size_bytes": 16345255
+    },
+    "rounds": [
+      {
+        "dev_accuracy": 0.3271604938271605,
+        "dev_macro_f1": 0.21813362658433083,
+        "epoch": 0,
+        "train_loss": 2.1778793334960938
+      },
+      {
+        "dev_accuracy": 0.5216049382716049,
+        "dev_macro_f1": 0.41948115580733236,
+        "epoch": 1,
+        "train_loss": 2.107905069986979
+      },
+      {
+        "dev_accuracy": 0.6666666666666666,
+        "dev_macro_f1": 0.5555555555555556,
+        "epoch": 2,
+        "train_loss": 2.029587427775065
+      },
+      {
+        "dev_accuracy": 0.9598765432098766,
+        "dev_macro_f1": 0.9592533552263993,
+        "epoch": 3,
+        "train_loss": 1.9283383687337239
+      },
+      {
+        "dev_accuracy": 1.0,
+        "dev_macro_f1": 1.0,
+        "epoch": 4,
+        "train_loss": 1.8380508422851562
+      },
+      {
+        "dev_accuracy": 1.0,
+        "dev_macro_f1": 1.0,
+        "epoch": 5,
+        "train_loss": 1.7411422729492188
+      }
+    ],
+    "runtime_env_var": "SLM_HARNESS_FAILURE_CLASSIFIER_MODEL_DIR",
+    "task_type": "failure_classify",
+    "train_examples": 1476
+  },
+  "patch_risk": {
+    "base_model": "google/bert_uncased_L-2_H-128_A-2",
+    "batch_size": 64,
+    "dev_examples": 324,
+    "device": "cuda",
+    "effective_batch_size": 64,
+    "elapsed_seconds": 13.276,
+    "epochs": 6,
+    "gradient_accumulation_steps": 1,
+    "labels": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "max_length": 512,
+    "metrics": {
+      "accuracy": 1.0,
+      "confusion": {
+        "high->high": 108,
+        "low->low": 108,
+        "medium->medium": 108
+      },
+      "correct": 324,
+      "macro_f1": 1.0,
+      "per_label": {
+        "high": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 108
+        },
+        "low": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 108
+        },
+        "medium": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 108
+        }
+      },
+      "total": 324
+    },
+    "model_dir": "models/trained/patch_risk_classifier_v1/model",
+    "parameter_count": 4386307,
+    "parameter_limit": 200000000,
+    "quantized": {
+      "model_dir": "models/trained/patch_risk_classifier_v1/model",
+      "output_path": "models/trained/patch_risk_classifier_v1/quantized/pytorch_model_int8_dynamic_state.pt",
+      "size_bytes": 16344487
+    },
+    "rounds": [
+      {
+        "dev_accuracy": 1.0,
+        "dev_macro_f1": 1.0,
+        "epoch": 0,
+        "train_loss": 0.9941981633504232
+      },
+      {
+        "dev_accuracy": 1.0,
+        "dev_macro_f1": 1.0,
+        "epoch": 1,
+        "train_loss": 0.8144086201985677
+      },
+      {
+        "dev_accuracy": 1.0,
+        "dev_macro_f1": 1.0,
+        "epoch": 2,
+        "train_loss": 0.6907602945963541
+      },
+      {
+        "dev_accuracy": 1.0,
+        "dev_macro_f1": 1.0,
+        "epoch": 3,
+        "train_loss": 0.5967276891072592
+      },
+      {
+        "dev_accuracy": 1.0,
+        "dev_macro_f1": 1.0,
+        "epoch": 4,
+        "train_loss": 0.5146174430847168
+      },
+      {
+        "dev_accuracy": 1.0,
+        "dev_macro_f1": 1.0,
+        "epoch": 5,
+        "train_loss": 0.44234561920166016
+      }
+    ],
+    "runtime_env_var": "SLM_HARNESS_PATCH_RISK_MODEL_DIR",
+    "task_type": "patch_risk",
+    "train_examples": 1476
+  }
+}

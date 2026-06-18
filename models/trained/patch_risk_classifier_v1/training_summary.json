@@ -1,0 +1,96 @@
+{
+  "base_model": "google/bert_uncased_L-2_H-128_A-2",
+  "batch_size": 64,
+  "dev_examples": 324,
+  "device": "cuda",
+  "effective_batch_size": 64,
+  "elapsed_seconds": 13.276,
+  "epochs": 6,
+  "gradient_accumulation_steps": 1,
+  "labels": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "max_length": 512,
+  "metrics": {
+    "accuracy": 1.0,
+    "confusion": {
+      "high->high": 108,
+      "low->low": 108,
+      "medium->medium": 108
+    },
+    "correct": 324,
+    "macro_f1": 1.0,
+    "per_label": {
+      "high": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 108
+      },
+      "low": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 108
+      },
+      "medium": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 108
+      }
+    },
+    "total": 324
+  },
+  "model_dir": "models/trained/patch_risk_classifier_v1/model",
+  "parameter_count": 4386307,
+  "parameter_limit": 200000000,
+  "quantized": {
+    "model_dir": "models/trained/patch_risk_classifier_v1/model",
+    "output_path": "models/trained/patch_risk_classifier_v1/quantized/pytorch_model_int8_dynamic_state.pt",
+    "size_bytes": 16344487
+  },
+  "rounds": [
+    {
+      "dev_accuracy": 1.0,
+      "dev_macro_f1": 1.0,
+      "epoch": 0,
+      "train_loss": 0.9941981633504232
+    },
+    {
+      "dev_accuracy": 1.0,
+      "dev_macro_f1": 1.0,
+      "epoch": 1,
+      "train_loss": 0.8144086201985677
+    },
+    {
+      "dev_accuracy": 1.0,
+      "dev_macro_f1": 1.0,
+      "epoch": 2,
+      "train_loss": 0.6907602945963541
+    },
+    {
+      "dev_accuracy": 1.0,
+      "dev_macro_f1": 1.0,
+      "epoch": 3,
+      "train_loss": 0.5967276891072592
+    },
+    {
+      "dev_accuracy": 1.0,
+      "dev_macro_f1": 1.0,
+      "epoch": 4,
+      "train_loss": 0.5146174430847168
+    },
+    {
+      "dev_accuracy": 1.0,
+      "dev_macro_f1": 1.0,
+      "epoch": 5,
+      "train_loss": 0.44234561920166016
+    }
+  ],
+  "runtime_env_var": "SLM_HARNESS_PATCH_RISK_MODEL_DIR",
+  "task_type": "patch_risk",
+  "train_examples": 1476
+}

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import re
 import time
 from dataclasses import dataclass, field
@@ -50,6 +51,9 @@ _PATCH_RISK_PATTERNS: tuple[tuple[str, str], ...] = (
     (r"\b(subprocess|shell=True|eval\(|exec\(|os\.system|rm -rf)\b", "command_execution"),
     (r"\b(permission|sandbox|policy|admin|role)\b", "permissions"),
 )
+
+_CLASSIFIER_CACHE: dict[str, tuple[Any, Any, Any, str]] = {}
+
 
 @dataclass
 class SubroutineRun:
@@ -144,17 +148,34 @@ def rank_search_hits_subroutine(query: str, hits: list[dict[str, Any]]) -> Subro
 def classify_failure_subroutine(text: str) -> SubroutineRun:
     started = time.perf_counter()
     model_id = HF_SUBROUTINE_MODELS["failure_classify"]
-    output = classify_failure_rules(text)
+    model_dir = os.environ.get("SLM_HARNESS_FAILURE_CLASSIFIER_MODEL_DIR")
+    prediction = (
+        _predict_text_classifier(model_dir, f"TASK: classify software failure\nLOG_OR_TRACE:\n{text}")
+        if model_dir
+        else None
+    )
+    if prediction is not None:
+        label, confidence, loaded_model_id = prediction
+        output = {
+            "category": label,
+            "confidence": confidence,
+            "rationale": "trained classifier prediction",
+        }
+        model_id = loaded_model_id
+        fallback_path = "trained_failure_classifier"
+    else:
+        output = classify_failure_rules(text)
+        fallback_path = "deterministic_failure_rules"
     success = output["category"] != "unknown"
     return _run(
         "failure_classify",
         output,
         True,
         True,
-        "deterministic_failure_rules",
+        fallback_path,
         model_id,
         started,
-        [{"stage": "deterministic_failure_rules", "ok": success}],
+        [{"stage": fallback_path, "ok": success}],
     )
 
 
@@ -162,15 +183,31 @@ def classify_patch_risk_subroutine(diff: str, *, tests: str = "") -> SubroutineR
     started = time.perf_counter()
     model_id = HF_SUBROUTINE_MODELS["patch_risk"]
     output = classify_patch_risk_rules(diff, tests=tests)
+    fallback_path = "deterministic_patch_risk_rules"
+    model_dir = os.environ.get("SLM_HARNESS_PATCH_RISK_MODEL_DIR")
+    text = f"TASK: classify patch risk\nDIFF:\n{diff}\nTEST_EVIDENCE:\n{tests}"
+    prediction = _predict_text_classifier(model_dir, text) if model_dir else None
+    if prediction is not None:
+        label, confidence, loaded_model_id = prediction
+        output = {
+            **output,
+            "risk_level": label,
+            "confidence": confidence,
+            "tests_needed": label != "low" or output["tests_needed"],
+            "human_review_needed": label == "high" or output["human_review_needed"],
+            "rationale": "trained classifier risk prediction with deterministic subsystem extraction",
+        }
+        model_id = loaded_model_id
+        fallback_path = "trained_patch_risk_classifier"
     return _run(
         "patch_risk",
         output,
         True,
         True,
-        "deterministic_patch_risk_rules",
+        fallback_path,
         model_id,
         started,
-        [{"stage": "deterministic_patch_risk_rules", "ok": True}],
+        [{"stage": fallback_path, "ok": True}],
     )
 
 
@@ -343,3 +380,38 @@ def _extract_exception(traceback: str) -> str:
         if match:
             return match.group(1)
     return ""
+
+
+def _predict_text_classifier(model_dir: str | None, text: str) -> tuple[str, float, str] | None:
+    if not model_dir:
+        return None
+    try:
+        tokenizer, model, torch, device = _load_text_classifier(model_dir)
+        encoded = tokenizer(text, truncation=True, max_length=512, return_tensors="pt")
+        encoded = {key: value.to(device) for key, value in encoded.items()}
+        with torch.no_grad():
+            probs = torch.softmax(model(**encoded).logits, dim=-1)[0]
+        score, index = torch.max(probs, dim=-1)
+        label = model.config.id2label.get(int(index.item()), str(int(index.item())))
+        return str(label), float(score.item()), model_dir
+    except Exception:
+        return None
+
+
+def _load_text_classifier(model_dir: str) -> tuple[Any, Any, Any, str]:
+    cached = _CLASSIFIER_CACHE.get(model_dir)
+    if cached is not None:
+        return cached
+    try:
+        import torch  # type: ignore[import-not-found]
+        from transformers import AutoModelForSequenceClassification, AutoTokenizer  # type: ignore[import-not-found]
+    except ImportError as exc:
+        raise RuntimeError("torch and transformers are required for trained subroutine classifiers") from exc
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+    model.to(device)
+    model.eval()
+    loaded = (tokenizer, model, torch, device)
+    _CLASSIFIER_CACHE[model_dir] = loaded
+    return loaded

@@ -30,10 +30,14 @@ model_id = "ishaanranjan/slm-agent-search-hit-ranker-qwen2-5-0-5b"
 [subroutines.failure_classify]
 backend = "deterministic"
 model_id = "local/failure-classifier-rules-v1"
+# Optional trained classifier:
+# SLM_HARNESS_FAILURE_CLASSIFIER_MODEL_DIR=models/trained/failure_classifier_v1/model
 
 [subroutines.patch_risk]
 backend = "deterministic"
 model_id = "local/patch-risk-classifier-rules-v1"
+# Optional trained classifier:
+# SLM_HARNESS_PATCH_RISK_MODEL_DIR=models/trained/patch_risk_classifier_v1/model
 
 # Example cloud route:
 # [subroutines.search_query]
