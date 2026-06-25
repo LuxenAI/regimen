@@ -572,7 +572,17 @@ def _schema_valid(output: Any, schema: dict[str, Any] | None) -> bool:
         return False
     required = schema.get("required", [])
     if isinstance(required, list):
-        return all(isinstance(key, str) and key in output for key in required)
+        if not all(isinstance(key, str) and key in output for key in required):
+            return False
+    props = schema.get("properties") or {}
+    for field, field_schema in props.items():
+        if field not in output:
+            continue
+        items_schema = field_schema.get("items") if field_schema.get("type") == "array" else None
+        if items_schema and isinstance(output[field], list):
+            expected_type = items_schema.get("type")
+            if expected_type == "string" and not all(isinstance(v, str) for v in output[field]):
+                return False
     return True
 
 
