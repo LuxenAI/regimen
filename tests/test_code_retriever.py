@@ -7,7 +7,10 @@ from openharness.orchestration.code_retriever import (
     SymbolEntry,
     _dp_segment,
     build_corpus_splitter,
+    clear_retriever_cache,
+    get_cached_retriever,
     light_stem,
+    repo_signature,
     split_identifier,
     tokenize_query,
 )
@@ -125,6 +128,44 @@ def test_test_file_penalty_demotes_tests() -> None:
 # --------------------------------------------------------------------------- #
 # Schema-validator fix (from the search_query_gen investigation)
 # --------------------------------------------------------------------------- #
+
+def _write_repo(tmp_path) -> str:
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "a.py").write_text(
+        'def merge_query_params(url, params):\n'
+        '    """Merge query parameters into the request url."""\n'
+        '    return url\n'
+    )
+    (pkg / "b.py").write_text(
+        'def render_template(name):\n'
+        '    """Render a template by name."""\n'
+        '    return name\n'
+    )
+    return str(tmp_path)
+
+
+def test_cached_retriever_reuses_index_until_files_change(tmp_path) -> None:
+    clear_retriever_cache()
+    root = _write_repo(tmp_path)
+
+    r1 = get_cached_retriever(root)
+    r2 = get_cached_retriever(root)
+    # unchanged repo -> same cached object
+    assert r1 is r2
+    assert r1.query("merge query parameters", top_k=1)[0].entry.name == "merge_query_params"
+
+    sig_before = repo_signature(root)
+    # modify a file: signature changes and the cache rebuilds
+    new_file = tmp_path / "pkg" / "c.py"
+    new_file.write_text('def added():\n    """A new symbol."""\n    return 1\n')
+    assert repo_signature(root) != sig_before
+
+    r3 = get_cached_retriever(root)
+    assert r3 is not r1
+    assert any(e.name == "added" for e in r3.entries)
+    clear_retriever_cache()
+
 
 def test_schema_valid_rejects_dict_items_for_string_array() -> None:
     from openharness.orchestration.slm_runner import _schema_valid

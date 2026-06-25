@@ -27,10 +27,11 @@ no hard third-party dependency, so it can be unit-tested in isolation.
 from __future__ import annotations
 
 import ast
+import hashlib
 import math
 import os
 import re
-from collections import Counter
+from collections import Counter, OrderedDict
 from dataclasses import dataclass, field
 from typing import Callable, Iterable, Iterator, Sequence
 
@@ -44,6 +45,9 @@ __all__ = [
     "resolve_stemmer",
     "iter_python_symbols",
     "build_retriever",
+    "repo_signature",
+    "get_cached_retriever",
+    "clear_retriever_cache",
 ]
 
 _CAMEL_1 = re.compile(r"([A-Z]+)([A-Z][a-z])")
@@ -380,3 +384,58 @@ def build_retriever(roots: Iterable[str], **kwargs: object) -> CodeRetriever:
     for root in roots:
         entries.extend(iter_python_symbols(root))
     return CodeRetriever(**kwargs).fit(entries)  # type: ignore[arg-type]
+
+
+# --------------------------------------------------------------------------- #
+# Caching: avoid re-parsing/re-indexing a repo on every query
+# --------------------------------------------------------------------------- #
+
+_RETRIEVER_CACHE: "OrderedDict[tuple, tuple[str, CodeRetriever]]" = OrderedDict()
+_CACHE_MAX = 8
+
+
+def repo_signature(root: str) -> str:
+    """A content signature of every .py file under ``root`` (path+mtime+size).
+
+    Changes whenever any Python file is added, removed, or modified, so a cached
+    index can be invalidated without re-parsing.
+    """
+    h = hashlib.sha256()
+    for dirpath, _dirs, files in sorted(os.walk(root)):
+        for fname in sorted(files):
+            if not fname.endswith(".py"):
+                continue
+            fpath = os.path.join(dirpath, fname)
+            try:
+                st = os.stat(fpath)
+            except OSError:
+                continue
+            h.update(fpath.encode("utf-8", "replace"))
+            h.update(str(st.st_mtime_ns).encode())
+            h.update(str(st.st_size).encode())
+    return h.hexdigest()
+
+
+def get_cached_retriever(root: str, **kwargs: object) -> CodeRetriever:
+    """Return a fitted retriever for ``root``, reusing a cached index when the
+    repo is unchanged. The cache is keyed by (root, retriever kwargs) and
+    invalidated by :func:`repo_signature`. Bounded LRU of ``_CACHE_MAX`` repos.
+    """
+    abs_root = os.path.abspath(root)
+    key = (abs_root, tuple(sorted((k, repr(v)) for k, v in kwargs.items())))
+    sig = repo_signature(abs_root)
+    cached = _RETRIEVER_CACHE.get(key)
+    if cached is not None and cached[0] == sig:
+        _RETRIEVER_CACHE.move_to_end(key)
+        return cached[1]
+    retriever = build_retriever([abs_root], **kwargs)
+    _RETRIEVER_CACHE[key] = (sig, retriever)
+    _RETRIEVER_CACHE.move_to_end(key)
+    while len(_RETRIEVER_CACHE) > _CACHE_MAX:
+        _RETRIEVER_CACHE.popitem(last=False)
+    return retriever
+
+
+def clear_retriever_cache() -> None:
+    """Drop all cached retrievers (mainly for tests)."""
+    _RETRIEVER_CACHE.clear()

@@ -332,9 +332,9 @@ def create_server() -> Any:
             symbol name + docstring tokens; reduces context to the top_k symbols'
             files before any model call. No network, no model.
             """
-            from openharness.orchestration.code_retriever import build_retriever
+            from openharness.orchestration.code_retriever import get_cached_retriever
 
-            retriever = build_retriever([root])
+            retriever = get_cached_retriever(root)
             results = retriever.query(query, top_k=max(1, top_k))
             files: list[str] = []
             for result in results:

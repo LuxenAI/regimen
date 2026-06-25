@@ -1,0 +1,34 @@
+{
+  "union_ceiling_r5": 0.973,
+  "lexical_baseline_r5": 0.966,
+  "recoverable_misses": 10,
+  "total_misses": 48,
+  "cascade_sweep": {
+    "0.05": {
+      "r5": 0.947,
+      "recovered": 3,
+      "regressed": 19
+    },
+    "0.10": {
+      "r5": 0.943,
+      "recovered": 5,
+      "regressed": 26
+    },
+    "0.15": {
+      "r5": 0.94,
+      "recovered": 5,
+      "regressed": 30
+    },
+    "0.20": {
+      "r5": 0.94,
+      "recovered": 5,
+      "regressed": 30
+    },
+    "0.30": {
+      "r5": 0.939,
+      "recovered": 5,
+      "regressed": 32
+    }
+  },
+  "verdict": "cascade net-negative at every gate; neural adds no usable value; ship lexical alone"
+}
