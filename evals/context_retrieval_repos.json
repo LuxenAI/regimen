@@ -1,0 +1,15 @@
+{
+  "description": "Pinned HEAD SHAs of the repos used to auto-generate evals/context_retrieval_queries.jsonl. Queries are built from the first docstring sentence of each function/class with a docstring (>=4 informative tokens after stripping identifier-name tokens). Ground truth = identifier + relative file path.",
+  "generated": "2026-06-25",
+  "query_generator": "scripts/build_context_retrieval_queries.py",
+  "repos": {
+    "httpx":    {"url": "https://github.com/encode/httpx",      "head": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254", "queries": 177},
+    "jinja2":   {"url": "https://github.com/pallets/jinja",      "head": "5ef70112a1ff19c05324ff889dd30405b1002044", "queries": 241},
+    "requests": {"url": "https://github.com/psf/requests",       "head": "4ed3d1b3204caa6806a36125a39589044a02e807", "queries": 148},
+    "flask":    {"url": "https://github.com/pallets/flask",      "head": "36e4a824f340fdee7ed50937ba8e7f6bc7d17f81", "queries": 178},
+    "click":    {"url": "https://github.com/pallets/click",      "head": "679a7a0eccbdded7a6e85680bdaaf08003765e01", "queries": 313},
+    "rich":     {"url": "https://github.com/Textualize/rich",    "head": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f", "queries": 349}
+  },
+  "total_queries": 1406,
+  "notes": "The original n=10 hand-built ground-truth queries from Stages 5-8 (httpx/jinja2) are retained as a labeled continuity subset in results/bm25_retrieval_baseline.md. The auto-generated set includes test functions; each query derives from that exact function's own docstring, so ground truth is unambiguous."
+}
