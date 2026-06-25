@@ -315,6 +315,54 @@ def create_server() -> Any:
             }
         )
 
+    # Opt-in lexical code-context retriever. Disabled by default so existing
+    # behavior is unchanged unless SLM_HARNESS_ENABLE_CODE_RETRIEVER is set.
+    if os.getenv("SLM_HARNESS_ENABLE_CODE_RETRIEVER", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
+
+        @server.tool()
+        def slm_code_context_search(query: str, root: str, top_k: int = 5) -> str:
+            """Rank repository symbols for a query and return the files to read.
+
+            Opt-in (set SLM_HARNESS_ENABLE_CODE_RETRIEVER). Deterministic BM25 over
+            symbol name + docstring tokens; reduces context to the top_k symbols'
+            files before any model call. No network, no model.
+            """
+            from openharness.orchestration.code_retriever import build_retriever
+
+            retriever = build_retriever([root])
+            results = retriever.query(query, top_k=max(1, top_k))
+            files: list[str] = []
+            for result in results:
+                if result.entry.file_path not in files:
+                    files.append(result.entry.file_path)
+            return _json(
+                {
+                    "query": query,
+                    "root": root,
+                    "results": [
+                        {
+                            "name": r.entry.name,
+                            "file": r.entry.file_path,
+                            "line": r.entry.line,
+                            "kind": r.entry.kind,
+                            "score": round(r.score, 4),
+                        }
+                        for r in results
+                    ],
+                    "files_to_read": files,
+                    "retriever": {
+                        "stemmer": retriever.stemmer_name,
+                        "splitter": retriever.splitter_name,
+                        "symbols": len(retriever.entries),
+                    },
+                }
+            )
+
     return server
 
 

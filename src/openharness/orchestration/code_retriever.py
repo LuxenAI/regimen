@@ -26,11 +26,13 @@ no hard third-party dependency, so it can be unit-tested in isolation.
 
 from __future__ import annotations
 
+import ast
 import math
+import os
 import re
 from collections import Counter
 from dataclasses import dataclass, field
-from typing import Callable, Iterable, Sequence
+from typing import Callable, Iterable, Iterator, Sequence
 
 __all__ = [
     "SymbolEntry",
@@ -40,6 +42,8 @@ __all__ = [
     "tokenize_query",
     "light_stem",
     "resolve_stemmer",
+    "iter_python_symbols",
+    "build_retriever",
 ]
 
 _CAMEL_1 = re.compile(r"([A-Z]+)([A-Z][a-z])")
@@ -340,3 +344,39 @@ class CodeRetriever:
         for rank, (sc, i) in enumerate(scored[:top_k], 1):
             out.append(RetrievalResult(entry=self.entries[i], score=sc, rank=rank))
         return out
+
+
+# --------------------------------------------------------------------------- #
+# Corpus construction
+# --------------------------------------------------------------------------- #
+
+def iter_python_symbols(root: str) -> Iterator[SymbolEntry]:
+    """Yield a SymbolEntry for every function/class def under ``root``."""
+    root = os.path.abspath(root)
+    for dirpath, _dirs, files in os.walk(root):
+        for fname in files:
+            if not fname.endswith(".py"):
+                continue
+            fpath = os.path.join(dirpath, fname)
+            try:
+                tree = ast.parse(open(fpath, errors="replace").read(), filename=fpath)
+            except (SyntaxError, OSError):
+                continue
+            rel = os.path.relpath(fpath, root)
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    yield SymbolEntry(
+                        name=node.name,
+                        file_path=rel,
+                        docstring=(ast.get_docstring(node) or "")[:400],
+                        kind=type(node).__name__,
+                        line=node.lineno,
+                    )
+
+
+def build_retriever(roots: Iterable[str], **kwargs: object) -> CodeRetriever:
+    """AST-index one or more repo roots and return a fitted ``CodeRetriever``."""
+    entries: list[SymbolEntry] = []
+    for root in roots:
+        entries.extend(iter_python_symbols(root))
+    return CodeRetriever(**kwargs).fit(entries)  # type: ignore[arg-type]
