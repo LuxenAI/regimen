@@ -240,6 +240,47 @@ inference overhead.
 
 ---
 
+## 13. Scaled, GPU-Backed Retrieval Study (supersedes the n=10 story)
+
+The n=10 proof-of-concept was scaled to a real benchmark and measured against strong lexical
+and neural baselines. Full detail: `results/retrieval_eval_full.md`.
+
+**Eval set:** 1,406 auto-generated ground-truth queries across 6 pinned repos (httpx, jinja2,
+requests, flask, click, rich). Each query is the first docstring sentence of a function/class
+with identifier-name tokens stripped; ground truth = identifier + file.
+(`evals/context_retrieval_queries.jsonl`, generator `scripts/build_context_retrieval_queries.py`.)
+
+**Results (full set, recall@5 / mean context reduction):**
+
+| Method | recall@1 | recall@5 | reduction | notes |
+|---|---:|---:|---:|---|
+| BM25+stem baseline | 0.780 | **0.966** | 86.9% | winner overall, deterministic, no GPU |
+| Improved lexical (compound+def-site) | 0.723 | 0.942 | 87.8% | **wins on impl subset: 0.977 r@5** |
+| Neural (jina-embeddings-v2-base-code, 160.9M) | 0.421 | 0.627 | 87.9% | real GPU inference, 1,581 emb/s, 3,541 MiB |
+| Hybrid RRF | 0.289 | 0.790 | 85.9% | lost to lexical; dropped, not integrated |
+
+**Key findings (all honest, including the negatives):**
+- The plain **BM25+stem lexical baseline wins** (r@5 0.966) and is hard to beat. At scale,
+  name+docstring BM25 is genuinely strong — the n=10 set (7/10) understated it.
+- The **improved retriever wins on the implementation-target subset** (impl r@5 0.962→0.977,
+  better at every k) but its test-file penalty costs recall on the 360 test-target queries,
+  dragging the full-set number down 2.3pp. This is the correct heuristic for finding
+  implementation, reported with its tradeoff.
+- The **neural model lost to lexical** by ~34pp at r@5. Caveat: queries are docstring-derived,
+  which favors lexical surface overlap; this is not a general verdict against neural retrieval.
+- The **hybrid did not beat both singles** and was dropped per plan.
+- A **new module** `src/openharness/orchestration/code_retriever.py` ships the lexical retriever
+  behind an opt-in MCP tool `slm_code_context_search` (gated by
+  `SLM_HARNESS_ENABLE_CODE_RETRIEVER`); default behavior unchanged. 10 unit tests pass; ruff clean.
+- **Workstream E (downstream answer-preservation) was SKIPPED** — no API key present; no
+  downstream numbers fabricated (`results/downstream_value_test_SKIPPED.md`).
+
+The earlier negative findings about the existing checkpoints (Sections 3–11) stand unchanged:
+`failure_classifier_v1` is near-random on real inputs, `search_query_gen` collapses to a
+placeholder and its 88.4% was a schema-validation artifact (since fixed).
+
+---
+
 ## Branch History
 
 ```
